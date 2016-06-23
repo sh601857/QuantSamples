@@ -11,7 +11,7 @@ from pybrain.structure.modules import SoftmaxLayer
 from pybrain.utilities           import percentError
 #https://github.com/poweltalwar/DeepLearning/blob/master/neuralNets.py
 secID='000300'
-HISTORY = 9
+HISTORY = 12
 
 MAS     = 12
 MAL     = 26
@@ -27,31 +27,34 @@ rawData['EMAL'] = ta.EMA( cnpa ,timeperiod=MAL)
 rawData['DIFF'] = np.log( rawData['EMAS'] / rawData['EMAL'] )*100
 rawData['DEA']  = ta.EMA( np.array(rawData['DIFF']) ,timeperiod=MAM)
 rawData['CDIS'] = np.log( rawData['closeIndex'] / rawData['EMAL'] )*100
-
+rawData['MACD'] = (rawData['DIFF'] - rawData['DEA'])*2
 #print( rawData.head(5) )
 #print( rawData.tail(5) )
 rawData=rawData.dropna(axis=0)
 
-training_set = (datetime.date(2010,1,1), datetime.date(2016,1,1))       
-testing_set  = (datetime.date(2016,1,1),datetime.date(2016,6,30))      
+training_set = (datetime.date(2005,1,1), datetime.date(2013,3,1))       
+testing_set  = (datetime.date(2013,1,1),datetime.date(2016,6,30))      
 
  
 
 from pybrain.datasets import SupervisedDataSet
 ### Build train data set
 def make_data_set(beg,end):
-    ds = ClassificationDataSet(HISTORY*3, class_labels=['None', 'Buy' , 'Sell']) #SupervisedDataSet(HISTORY*3, 1) 
+    ds = ClassificationDataSet(HISTORY*2+1, class_labels=['None', 'Buy' , 'Sell']) #SupervisedDataSet(HISTORY*3, 1) 
     trainQ = rawData[(rawData.tradeDate <= end) & ( rawData.tradeDate >= beg)]
     
 
     for idx in range(1, len(trainQ) - HISTORY - 1 - HOLD-1):
+        cur = idx + HISTORY - 1  
+        if( abs( trainQ.iloc[cur]['MACD'] ) > 0.5 ):
+            continue        
         sample = []
         for i in range(HISTORY):
             #sample.append( trainQ.iloc[idx+i]['EMAL'] )#  [['EMAL','DIFF','DEA','CDIS']] ) )
             sample.append( trainQ.iloc[idx+i]['DIFF'] )
             sample.append( trainQ.iloc[idx+i]['DEA'] )
-            sample.append( trainQ.iloc[idx+i]['CDIS'] )
-        cur = idx + HISTORY - 1 
+                   
+        sample.append( trainQ.iloc[cur]['CDIS'] )
         if max( trainQ.iloc[cur+1:cur+HOLD+1]['EMAS'] ) / trainQ.iloc[cur]['closeIndex'] > 1.05 : 
             answer = 1
         elif min( trainQ.iloc[cur+1:cur+HOLD+1]['EMAS'] ) / trainQ.iloc[cur]['closeIndex'] < 0.95:
@@ -65,17 +68,20 @@ training_ds = make_data_set(training_set[0],training_set[1])
 testing_ds = make_data_set(testing_set[0],testing_set[1])
 training_ds._convertToOneOfMany()
 testing_ds._convertToOneOfMany()
-print(testing_ds)
+print(training_ds)
 
-fnn = buildNetwork(training_ds.indim, HISTORY*3, training_ds.outdim)
+fnn = buildNetwork(training_ds.indim, HISTORY * 2 , training_ds.outdim, outclass=SoftmaxLayer)
 
 trainer = BackpropTrainer(fnn, training_ds, momentum = 0.1, verbose = True, weightdecay = 0.01)
-trainer.trainEpochs(epochs = 25)
+trainer.trainEpochs(epochs = 15)
 #NetworkWriter.writeToFile(fnn, secID+'_fnn.csv')
 
 #ts = fnn.activateOnDataset(testing_ds)
 #print(training_ds)
 #print(ts)
-print( 'Percent Error on Test dataset: ' , percentError( trainer.testOnClassData (
-    dataset=testing_ds )
-                                                        , testing_ds['class'] ) )
+print( 'Percent Error on Test dataset: ' , percentError( 
+    trainer.testOnClassData (dataset=testing_ds ), testing_ds['class'] ) )
+
+out = fnn.activateOnDataset(testing_ds).argmax(axis=1)
+
+print(out)
