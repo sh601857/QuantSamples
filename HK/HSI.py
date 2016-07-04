@@ -8,21 +8,27 @@ import numpy as np
 import matplotlib.finance as finance
 import matplotlib.mlab as mlab
 import sys
+from WindPy import w
+
+
+w.start()
+hkTdays = w.tdays("2016-06-30", "2016-07-04", "TradingCalendar=HKEX")
+
 
 
 server = 'HKI.db'
 
-startdate = date(2016,6,1)
-enddate = date(2016,6,30)
+startdate = date(2016,7,1)
+enddate = date(2016,7,4)
 
-fh = finance.fetch_historical_yahoo('^HSCE', startdate, enddate)#, cachename=ticker + '.csv'
+#fh = finance.fetch_historical_yahoo('^HSI', startdate, enddate)#, cachename=ticker + '.csv'
 # a numpy record array with fields: date, open, high, low, close, volume, adj_close)
 
-r = mlab.csv2rec(fh); fh.close()
-r.sort()
-r=r[r.volume>0]
+#r = mlab.csv2rec(fh); fh.close()
+#r.sort()
 
-
+#print (r)
+#r=r[r.volume>0]
 
 conn = sqlite3.connect('HKI.db')
 cursor = conn.cursor()
@@ -38,7 +44,7 @@ CREATE TABLE IF NOT EXISTS HKITRI (
 sql = "INSERT OR IGNORE INTO HKITRI VALUES (?, ?, ?)"
 
 
-for tday in r.date :
+for tday in hkTdays.Data[0]: #r.date :
     file = 'idx_{0}{1}.csv'.format(tday.day, tday.strftime('%b%y'))
     cash ='temp.csv'
     url = 'http://www.hsi.com.hk/HSI-Net/static/revamp/contents/en/indexes/report/hstri/' + file
@@ -75,3 +81,9 @@ for tday in r.date :
 
 conn.commit()			
 conn.close()
+
+
+
+
+
+
