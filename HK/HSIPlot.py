@@ -11,7 +11,7 @@ import math
 conn = sqlite3.connect('HKI.db')
 r = pd.read_sql_query('SELECT * FROM HKITRI where secid=\'HSCEI\' ORDER BY tradedate', conn)
 
-NDays = 1;
+NDays = 3;
 
 
 N=len(r)
