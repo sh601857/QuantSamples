@@ -4,6 +4,7 @@
 
 import sys
 import sqlite3
+import urllib.request
 from PySide import QtCore
 from PySide import QtGui
 import csv
@@ -20,7 +21,7 @@ class HKAssertsWidget(QtGui.QWidget):
         self.tvAsserts = QtGui.QTableView()
         self.smAsserts = QtGui.QStandardItemModel(self.tvAsserts)
         self.smAsserts.setColumnCount(8)
-        self.smAsserts.setHorizontalHeaderLabels(['Name','Code','Tdate','Price','SumVollum','cvalue','Cost','Gain'])
+        self.smAsserts.setHorizontalHeaderLabels(['Name','Code','Tdate','Price','SumVollum','CValue','Cost','Gain'])
         self.tvAsserts.setModel(self.smAsserts)
 
         importBtn = QtGui.QPushButton(self.tr("Import"))
@@ -139,5 +140,9 @@ class HKAssertsWidget(QtGui.QWidget):
         
     @QtCore.Slot()
     def save(self):
-
+        
+        url = "http://www.sse.com.cn/services/hkexsc/home/"
+        response = urllib.request.urlopen(url)
+        response_detail = response.read().decode('utf-8')        
+        print(response_detail)
         pass
