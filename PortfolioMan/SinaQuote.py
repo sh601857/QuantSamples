@@ -61,5 +61,5 @@ def GetQuote(stockCode):
     stock_df = pd.DataFrame(list(stock_dict.values()),index=list(stock_dict.keys()) )
     return stock_df              
             
-sdf = GetQuote('sh601166,hk00998')
-print(sdf)
+#sdf = GetQuote('sh601166,hk00998')
+#print(sdf)
