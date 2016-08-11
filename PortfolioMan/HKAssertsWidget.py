@@ -46,7 +46,7 @@ class HKAssertsWidget(QtGui.QWidget):
         saveBtn.clicked.connect(self.save)
         importBtn.clicked.connect(self.importT)
         quoteBtn.clicked.connect(self.quotes)
-        
+        self.hkd2rmb = 0.85773
         self.loadData()
         
     @QtCore.Slot()
@@ -57,7 +57,7 @@ class HKAssertsWidget(QtGui.QWidget):
 
         conn = sqlite3.connect('HKAsserts.db')
         cursor = conn.cursor()
-        hkd2rmb = 0.85773
+        
         totalCV = 0.0
         totalCost =0.0
         try:
@@ -69,7 +69,7 @@ class HKAssertsWidget(QtGui.QWidget):
                 itemrow.append( QtGui.QStandardItem(str(row[3])) ) # price
                 itemrow.append( QtGui.QStandardItem(str(row[4])) ) # SumVollum
                 if(len(row[1])==5):
-                    cvalue = row[5] * hkd2rmb
+                    cvalue = row[5] * self.hkd2rmb
                 else:
                     cvalue = row[5]
                 totalCV = totalCV + cvalue
@@ -105,16 +105,20 @@ class HKAssertsWidget(QtGui.QWidget):
         
         with open(fileName, newline='', encoding='utf-8') as f:
             reader = csv.reader(f)
-            i=0
+            i=int(0)
+            records=int(0)
             for row in reader:
                 if i == 0 : 
                     i=i+1
                     continue
                 if len(row)< 15 :
                     continue
+                
                 sqllist = ( row[1],row[0],row[15],row[3],row[5],row[4],row[14],row[7] )
                 cursor.execute(sql,sqllist)
+                records=records+1
             conn.commit()
+            QtGui.QMessageBox.information(self,self.tr('Import trades'), self.tr('[{0}] records imported.'.format(records)) , QtGui.QMessageBox.Ok)
         conn.close()                
         pass
     
@@ -135,14 +139,26 @@ class HKAssertsWidget(QtGui.QWidget):
         for i in range( len(qd) ):
             sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d%H:%M:%S'), str(qd.iloc[i]['C']) )
             cursor.execute(sql,sqltuple)
-        conn.commit()                
+        conn.commit()
+        QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
         conn.close()  
         
     @QtCore.Slot()
     def save(self):
         
         url = "http://www.sse.com.cn/services/hkexsc/home/"
-        response = urllib.request.urlopen(url)
-        response_detail = response.read().decode('utf-8')        
-        print(response_detail)
+        urllib.request.urlretrieve(url,'local_filename.html')
+        
+        f = open('local_filename.html', 'rt', encoding= 'utf-8')      
+        for line in f:
+            if 'var SELL_PRICE_clear =' in line:
+                idoc = line.find('.',10)
+                iend = line.find("'",idoc)
+                #print( line[idoc-1:iend] )
+                self.hkd2rmb = float(line[idoc-1:iend])
+        
+        
+        #response = urllib.request.urlopen(url)
+        #response_detail = response.read().decode('utf-8')        
+        #print(response_detail)
         pass
