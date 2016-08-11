@@ -41,7 +41,7 @@ class MainW(QtGui.QMainWindow):
         dockWidget = QtGui.QDockWidget((""), self)
         dockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         dockWidget.setWidget(self.cmdTree)
-        dockWidget.setBaseSize(200,800)
+        dockWidget.resize(300,800)
         dockWidget.setTitleBarWidget(QtGui.QWidget(dockWidget))
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)#hide the titlebar
 

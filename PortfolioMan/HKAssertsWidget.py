@@ -27,13 +27,13 @@ class HKAssertsWidget(QtGui.QWidget):
         importBtn = QtGui.QPushButton(self.tr("Import"))
         quoteBtn = QtGui.QPushButton(self.tr("Quotes"))
         updateBtn = QtGui.QPushButton(self.tr("Update"))      
-        saveBtn = QtGui.QPushButton(self.tr("Save"))
+        hkd2rmbBtn = QtGui.QPushButton(self.tr("HKD2RMB"))
 
         buttonBox = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
 
         buttonBox.addButton(importBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(quoteBtn, QtGui.QDialogButtonBox.ActionRole)
-        buttonBox.addButton(saveBtn, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(hkd2rmbBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(updateBtn, QtGui.QDialogButtonBox.ActionRole) 
 
         layout =  QtGui.QVBoxLayout()        
@@ -43,7 +43,7 @@ class HKAssertsWidget(QtGui.QWidget):
         layout.addWidget(buttonBox)
         self.setLayout(layout)      
         updateBtn.clicked.connect(self.loadData)
-        saveBtn.clicked.connect(self.save)
+        hkd2rmbBtn.clicked.connect(self.updatehkd2rmb)
         importBtn.clicked.connect(self.importT)
         quoteBtn.clicked.connect(self.quotes)
         self.hkd2rmb = 0.85773
@@ -144,7 +144,7 @@ class HKAssertsWidget(QtGui.QWidget):
         conn.close()  
         
     @QtCore.Slot()
-    def save(self):
+    def updatehkd2rmb(self):
         
         url = "http://www.sse.com.cn/services/hkexsc/home/"
         urllib.request.urlretrieve(url,'local_filename.html')
@@ -156,9 +156,6 @@ class HKAssertsWidget(QtGui.QWidget):
                 iend = line.find("'",idoc)
                 #print( line[idoc-1:iend] )
                 self.hkd2rmb = float(line[idoc-1:iend])
-        
-        
-        #response = urllib.request.urlopen(url)
-        #response_detail = response.read().decode('utf-8')        
-        #print(response_detail)
+                QtGui.QMessageBox.information(self,self.tr('Update HKD2RMB'), self.tr('HKD2RMB = [{0}].'.format(self.hkd2rmb)) , QtGui.QMessageBox.Ok)
+    
         pass
