@@ -38,10 +38,10 @@ class MainW(QtGui.QMainWindow):
         self.cmdTree.setModel(self.cmdmodel)
         self.cmdTree.setHeaderHidden(True)
         self.cmdTree.expandToDepth(2)
+        self.cmdTree.setMinimumWidth(150)
         dockWidget = QtGui.QDockWidget((""), self)
         dockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         dockWidget.setWidget(self.cmdTree)
-        dockWidget.resize(300,800)
         dockWidget.setTitleBarWidget(QtGui.QWidget(dockWidget))
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)#hide the titlebar
 
@@ -79,6 +79,8 @@ class MainW(QtGui.QMainWindow):
 
         self.cmdTree.clicked.connect(self.setWidget)
         
+        QtCore.QTimer.singleShot(200, self.resetDockWidth)
+        
     @QtCore.Slot()
     def setWidget(self,index):
         wgtID = self.cmdmodel.itemFromIndex(index).data(QtCore.Qt.UserRole+1)
@@ -88,6 +90,11 @@ class MainW(QtGui.QMainWindow):
             self.censw.setCurrentWidget(self.plotWgt)
         else:
             self.censw.setCurrentWidget(self.thirdPageWidget)
+            
+    @QtCore.Slot()
+    def resetDockWidth(self):
+        self.cmdTree.setMinimumWidth(10)
+    
 def main():
 
     app = QtGui.QApplication(sys.argv)
