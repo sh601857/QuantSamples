@@ -3,6 +3,7 @@
 
 
 import sys
+import os
 from PySide import QtCore
 from PySide import QtGui
 import HKAssertsWidget
@@ -15,7 +16,14 @@ class MainW(QtGui.QMainWindow):
 
         self.initUI()
 
-    def initUI(self):               
+    def initUI(self): 
+        
+        self.setWindowIcon(QtGui.QIcon('PortfolioMan.ico'))
+        if (os.name == 'nt'):
+            # This is needed to display the app icon on the taskbar on Windows 7
+            import ctypes
+            myappid = 'PortfolioManHK.1.0.0' # arbitrary string
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)        
         # create commonds tree        
         self.cmdmodel = QtGui.QStandardItemModel()
         parentItem = self.cmdmodel.invisibleRootItem()
@@ -47,7 +55,7 @@ class MainW(QtGui.QMainWindow):
 
         #Create central widget			
         self.HKWgt =  HKAssertsWidget.HKAssertsWidget()
-        self.plotWgt =  PlotWidget.PlotWidget()
+        self.plotWgt = PlotWidget.PlotWidget()  # QtGui.QWidget()
         self.thirdPageWidget =  QtGui.QWidget()
 
         self.censw =  QtGui.QStackedWidget()

@@ -17,7 +17,13 @@ class HKAssertsWidget(QtGui.QWidget):
         self.initUI()
 
     def initUI(self): 
-
+        
+        conn = sqlite3.connect('HKAsserts.db')
+        cursor = conn.cursor()
+        cursor.execute('select HKD2RMB from d_param' )
+        self.hkd2rmb =cursor.fetchone()[0]
+        conn.close() 
+        #self.hkd2rmb = 0.85773
         self.tvAsserts = QtGui.QTableView()
         self.smAsserts = QtGui.QStandardItemModel(self.tvAsserts)
         self.smAsserts.setColumnCount(8)
@@ -40,13 +46,22 @@ class HKAssertsWidget(QtGui.QWidget):
         self.tvAsserts.setSizePolicy( QtGui.QSizePolicy.Policy.Expanding, QtGui.QSizePolicy.Policy.Expanding )
         layout.addWidget(self.tvAsserts)
         #layout.addStretch()
-        layout.addWidget(buttonBox)
+        hlayout = QtGui.QHBoxLayout()
+        self.teHKD = QtGui.QLineEdit()
+        self.teHKD.setText( str( self.hkd2rmb ) )
+        #self.teHKD.setEnabled( False )
+
+        hlayout.addWidget( QtGui.QLabel('HKD2RMB:') )
+        hlayout.addWidget( self.teHKD )
+        hlayout.addWidget( buttonBox )
+
+        layout.addLayout( hlayout )
         self.setLayout(layout)      
         updateBtn.clicked.connect(self.loadData)
         hkd2rmbBtn.clicked.connect(self.updatehkd2rmb)
         importBtn.clicked.connect(self.importT)
         quoteBtn.clicked.connect(self.quotes)
-        self.hkd2rmb = 0.85773
+        
         self.loadData()
         
     @QtCore.Slot()
@@ -77,6 +92,8 @@ class HKAssertsWidget(QtGui.QWidget):
                 itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(cvalue)) ) # cvalue
                 itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(row[6])) ) # Cost
                 itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(cvalue + row[6])) ) # Gain
+                for i in range(3,8):
+                    itemrow[i].setTextAlignment( QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter )                
                 self.smAsserts.appendRow( itemrow )
             itemrow =[]
             itemrow.append( QtGui.QStandardItem('Total') ) # name                
@@ -87,8 +104,10 @@ class HKAssertsWidget(QtGui.QWidget):
             itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCV)) ) # cvalue
             itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCost)) ) # Cost
             itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCV + totalCost)) ) # Gain
+            for i in range(3,8):
+                itemrow[i].setTextAlignment( QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter )
             self.smAsserts.insertRow(0, itemrow )  
-            
+            self.tvAsserts.resizeColumnToContents( 2 )
         except:
             pass       
         conn.close() 
@@ -137,7 +156,7 @@ class HKAssertsWidget(QtGui.QWidget):
         qd = SinaQuote.GetQuote( stocks )
         sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
         for i in range( len(qd) ):
-            sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d%H:%M:%S'), str(qd.iloc[i]['C']) )
+            sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
             cursor.execute(sql,sqltuple)
         conn.commit()
         QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
@@ -156,6 +175,13 @@ class HKAssertsWidget(QtGui.QWidget):
                 iend = line.find("'",idoc)
                 #print( line[idoc-1:iend] )
                 self.hkd2rmb = float(line[idoc-1:iend])
+                self.teHKD.setText( str( self.hkd2rmb ) )
+                conn = sqlite3.connect('HKAsserts.db')
+                cursor = conn.cursor()
+                cursor.execute('update d_param set HKD2RMB=?' , (self.hkd2rmb,))
+                conn.commit()
+                conn.close()                 
+                
                 QtGui.QMessageBox.information(self,self.tr('Update HKD2RMB'), self.tr('HKD2RMB = [{0}].'.format(self.hkd2rmb)) , QtGui.QMessageBox.Ok)
     
         pass
