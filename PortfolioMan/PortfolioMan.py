@@ -7,6 +7,7 @@ import os
 from PySide import QtCore
 from PySide import QtGui
 import HKAssertsWidget
+import HSAssertsWidget
 import PlotWidget
 
 class MainW(QtGui.QMainWindow):
@@ -38,8 +39,13 @@ class MainW(QtGui.QMainWindow):
         parentItem.appendRow(item)
         
         item = QtGui.QStandardItem(self.tr("2.HS"))
-        item.appendRow(QtGui.QStandardItem("Asserts"))
-        item.appendRow(QtGui.QStandardItem("Plot"))
+        item.setData(10,QtCore.Qt.UserRole+1)
+        subitem = QtGui.QStandardItem("Asserts")
+        subitem.setData( 10, QtCore.Qt.UserRole+1 )
+        item.appendRow(subitem)
+        subitem = QtGui.QStandardItem("Trades")
+        subitem.setData( 11, QtCore.Qt.UserRole+1 )
+        item.appendRow(subitem)
         parentItem.appendRow(item)
    
         self.cmdTree = QtGui.QTreeView(self)
@@ -56,11 +62,15 @@ class MainW(QtGui.QMainWindow):
         #Create central widget			
         self.HKWgt =  HKAssertsWidget.HKAssertsWidget()
         self.plotWgt = PlotWidget.PlotWidget()  # QtGui.QWidget()
+        self.HSAWgt = HSAssertsWidget.HSAssertsWidget()
+        
         self.thirdPageWidget =  QtGui.QWidget()
 
         self.censw =  QtGui.QStackedWidget()
         self.censw.addWidget(self.HKWgt)
         self.censw.addWidget(self.plotWgt)
+        self.censw.addWidget(self.HSAWgt)
+        
         self.censw.addWidget(self.thirdPageWidget)
         self.censw.setCurrentIndex(0)
 
@@ -96,6 +106,8 @@ class MainW(QtGui.QMainWindow):
             self.censw.setCurrentWidget(self.HKWgt)
         elif wgtID==1:
             self.censw.setCurrentWidget(self.plotWgt)
+        elif wgtID == 10:
+            self.censw.setCurrentWidget(self.HSAWgt)
         else:
             self.censw.setCurrentWidget(self.thirdPageWidget)
             
