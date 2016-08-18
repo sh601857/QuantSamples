@@ -24,12 +24,14 @@ class HSAssertsWidget(QtGui.QWidget):
     
         importBtn = QtGui.QPushButton(self.tr("Import"))
         quoteBtn = QtGui.QPushButton(self.tr("Quotes"))
+        navBtn = QtGui.QPushButton(self.tr("NetValue"))
         updateBtn = QtGui.QPushButton(self.tr("Update"))      
     
         buttonBox = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
     
         buttonBox.addButton(importBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(quoteBtn, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(navBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(updateBtn, QtGui.QDialogButtonBox.ActionRole) 
     
         layout =  QtGui.QVBoxLayout()        
@@ -42,14 +44,54 @@ class HSAssertsWidget(QtGui.QWidget):
         updateBtn.clicked.connect(self.loadData)
         importBtn.clicked.connect(self.importT)
         quoteBtn.clicked.connect(self.quotes)        
+        navBtn.clicked.connect(self.getNAV)   
         
         self.loadData()
         
     @QtCore.Slot()
     def loadData(self):
-        pass
-    
-    
+        if( self.smAsserts.rowCount() >0 ):
+            self.smAsserts.removeRows(0, self.smAsserts.rowCount() )
+            
+        conn = sqlite3.connect('HSAsserts.db')
+        cursor = conn.cursor()            
+        totalCV = 0.0
+        totalCost =0.0
+        try:
+            for row in cursor.execute('SELECT Name,Code,tdate,price,SumVollum,cvalue,Cost,Gain FROM v_AssetsOverview ORDER BY cvalue DESC'):
+                itemrow =[]
+                itemrow.append( QtGui.QStandardItem(row[0]) ) # name
+                itemrow.append( QtGui.QStandardItem(row[1]) ) # code
+                itemrow.append( QtGui.QStandardItem(row[2] if row[2] != None else '') ) # tdate
+                itemrow.append( QtGui.QStandardItem(str(row[3]) if row[3] != None else '' ) ) # price
+                itemrow.append( QtGui.QStandardItem(str(row[4])) ) # SumVollum
+                cvalue = row[5] if row[5] != None else 0.0
+                totalCV = totalCV + cvalue
+                totalCost = totalCost + row[6]
+                itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(cvalue)) ) # cvalue
+                itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(row[6])) ) # Cost
+                itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(cvalue + row[6])) ) # Gain
+                for i in range(3,8):
+                    itemrow[i].setTextAlignment( QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter )                
+                self.smAsserts.appendRow( itemrow )
+            itemrow =[]
+            itemrow.append( QtGui.QStandardItem('Total') ) # name                
+            itemrow.append( QtGui.QStandardItem() ) # code
+            itemrow.append( QtGui.QStandardItem() ) # tdate
+            itemrow.append( QtGui.QStandardItem() ) # price
+            itemrow.append( QtGui.QStandardItem() ) # SumVollum
+            itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCV)) ) # cvalue
+            itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCost)) ) # Cost
+            itemrow.append( QtGui.QStandardItem('{0:.2f}'.format(totalCV + totalCost)) ) # Gain
+            for i in range(3,8):
+                itemrow[i].setTextAlignment( QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter )
+            self.smAsserts.insertRow(0, itemrow )  
+            self.tvAsserts.resizeColumnToContents( 2 )
+        except:
+            pass       
+        conn.close() 
+        
+        
     @QtCore.Slot()
     def importT(self):    
         fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
@@ -99,4 +141,26 @@ class HSAssertsWidget(QtGui.QWidget):
     
     @QtCore.Slot()
     def quotes(self):
-        pass
+        conn = sqlite3.connect('HSAsserts.db')
+        cursor = conn.cursor()        
+        stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket !='' and a.code= c.code and a.sumvollum !=0  
+        for row in cursor.execute("select c.Code,TradeMarket from b_code c where c.Enable=1 and c.TradeMarket !='' "):
+            if( stocks == ''):
+                stocks = row[1].lower() + row[0]
+            else:
+                stocks = stocks + ',' + row[1].lower()+row[0]
+                
+        qd = SinaQuote.GetQuote( stocks )
+        print(qd)
+        sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
+        for i in range( len(qd) ):
+            sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
+            cursor.execute(sql,sqltuple)
+        conn.commit()
+        QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
+        conn.close()  
+        
+    @QtCore.Slot()    
+    def getNAV(self):
+        # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022
+        
