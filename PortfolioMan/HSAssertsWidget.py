@@ -52,14 +52,50 @@ class HSAssertsWidget(QtGui.QWidget):
     
     @QtCore.Slot()
     def importT(self):    
-        fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import trades"), "", ("csv Files (*.csv)") ) [0]
+        fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
     
         conn = sqlite3.connect('HSAsserts.db')
-        cursor = conn.cursor()        
+        cursor = conn.cursor()
         
-        
-        pass
-    
+        with open(fileName, newline='', encoding='gb2312') as f:
+            reader = csv.reader(f)
+            i=int(0)
+            records=int(0)
+            tableName = ''
+            sql=''
+            for row in reader:
+                if i==0 : # row[0]   table name
+                    tableName = row[0]
+                    i = i+1
+                    if tableName == 'D_Trade':
+                        sql = "INSERT OR REPLACE INTO D_Trade VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    elif tableName == 'B_Code':     
+                        sql = "INSERT OR REPLACE INTO B_Code VALUES  (?, ?, ?, ?, ?, ?, ?)"
+                    else:
+                        return
+                    
+                    continue
+                if i==1 : # row[1]   table header
+                    i = i+1
+                    continue
+                if len(row) < 2:
+                    continue                
+                if tableName == 'D_Trade':
+
+                    sqltuple = ( row[0],row[1],row[4],row[3],row[5],row[6],row[8], abs(abs(float(row[8]))-abs(float(row[7]))) if float(row[7])>0 else 0.0 , row[9] )                       
+                    cursor.execute(sql,sqltuple)
+                    records=records+1                    
+                    
+                elif tableName == 'B_Code':     
+                    sqltuple = ( row[0],row[1],row[2],row[3],row[4],row[5],row[6] )
+                    cursor.execute(sql,sqltuple)
+                    records=records+1                      
+                else:
+                    return                
+                
+            conn.commit()
+            QtGui.QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [{1}].'.format(records,tableName)) , QtGui.QMessageBox.Ok)
+        conn.close()             
     
     @QtCore.Slot()
     def quotes(self):
