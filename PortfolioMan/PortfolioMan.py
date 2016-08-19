@@ -28,17 +28,8 @@ class MainW(QtGui.QMainWindow):
         # create commonds tree        
         self.cmdmodel = QtGui.QStandardItemModel()
         parentItem = self.cmdmodel.invisibleRootItem()
-        item = QtGui.QStandardItem(self.tr("1.HK"))
-        item.setData(0,QtCore.Qt.UserRole+1)
-        subitem = QtGui.QStandardItem("Asserts")
-        subitem.setData( 0, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        subitem = QtGui.QStandardItem("Plot")
-        subitem.setData( 1, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        parentItem.appendRow(item)
         
-        item = QtGui.QStandardItem(self.tr("2.HS"))
+        item = QtGui.QStandardItem(self.tr("1.HS"))
         item.setData(10,QtCore.Qt.UserRole+1)
         subitem = QtGui.QStandardItem("Asserts")
         subitem.setData( 10, QtCore.Qt.UserRole+1 )
@@ -46,7 +37,19 @@ class MainW(QtGui.QMainWindow):
         subitem = QtGui.QStandardItem("Trades")
         subitem.setData( 11, QtCore.Qt.UserRole+1 )
         item.appendRow(subitem)
+        parentItem.appendRow(item)   
+        
+        item = QtGui.QStandardItem(self.tr("2.HK"))
+        item.setData(20,QtCore.Qt.UserRole+1)
+        subitem = QtGui.QStandardItem("Asserts")
+        subitem.setData( 20, QtCore.Qt.UserRole+1 )
+        item.appendRow(subitem)
+        subitem = QtGui.QStandardItem("Plot")
+        subitem.setData( 21, QtCore.Qt.UserRole+1 )
+        item.appendRow(subitem)
         parentItem.appendRow(item)
+        
+
    
         self.cmdTree = QtGui.QTreeView(self)
         self.cmdTree.setModel(self.cmdmodel)
@@ -67,9 +70,10 @@ class MainW(QtGui.QMainWindow):
         self.thirdPageWidget =  QtGui.QWidget()
 
         self.censw =  QtGui.QStackedWidget()
+        self.censw.addWidget(self.HSAWgt)
         self.censw.addWidget(self.HKWgt)
         self.censw.addWidget(self.plotWgt)
-        self.censw.addWidget(self.HSAWgt)
+        
         
         self.censw.addWidget(self.thirdPageWidget)
         self.censw.setCurrentIndex(0)
@@ -102,9 +106,9 @@ class MainW(QtGui.QMainWindow):
     @QtCore.Slot()
     def setWidget(self,index):
         wgtID = self.cmdmodel.itemFromIndex(index).data(QtCore.Qt.UserRole+1)
-        if wgtID == 0:
+        if wgtID == 20:
             self.censw.setCurrentWidget(self.HKWgt)
-        elif wgtID==1:
+        elif wgtID==21:
             self.censw.setCurrentWidget(self.plotWgt)
         elif wgtID == 10:
             self.censw.setCurrentWidget(self.HSAWgt)

@@ -10,6 +10,7 @@ from PySide import QtGui
 import csv
 import SinaQuote
 
+
 class HSAssertsWidget(QtGui.QWidget):
     def __init__(self):
         super(HSAssertsWidget, self).__init__()     
@@ -95,7 +96,8 @@ class HSAssertsWidget(QtGui.QWidget):
     @QtCore.Slot()
     def importT(self):    
         fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
-    
+        if fileName == '' :
+            return
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()
         
@@ -129,7 +131,7 @@ class HSAssertsWidget(QtGui.QWidget):
                     records=records+1                    
                     
                 elif tableName == 'B_Code':     
-                    sqltuple = ( row[0],row[1],row[2],row[3],row[4],row[5],row[6] )
+                    sqltuple = ( row[0],row[1],row[2],row[3] if row[3] !='' else None ,row[4]  if row[4] !='' else None ,row[5]  if row[5] !='' else None ,row[6] )
                     cursor.execute(sql,sqltuple)
                     records=records+1                      
                 else:
@@ -143,18 +145,21 @@ class HSAssertsWidget(QtGui.QWidget):
     def quotes(self):
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()        
-        stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket !='' and a.code= c.code and a.sumvollum !=0  
-        for row in cursor.execute("select c.Code,TradeMarket from b_code c where c.Enable=1 and c.TradeMarket !='' "):
+        stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0  
+        for row in cursor.execute("select c.Code,TradeMarket from b_code c where c.Enable=1 and c.TradeMarket notnull "):
             if( stocks == ''):
                 stocks = row[1].lower() + row[0]
             else:
                 stocks = stocks + ',' + row[1].lower()+row[0]
                 
         qd = SinaQuote.GetQuote( stocks )
-        print(qd)
+        #print(qd)
         sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
         for i in range( len(qd) ):
-            sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
+            CValue = qd.iloc[i]['C']
+            if CValue == 0:
+                CValue = qd.iloc[i]['PC']
+            sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(CValue) )
             cursor.execute(sql,sqltuple)
         conn.commit()
         QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
@@ -162,5 +167,40 @@ class HSAssertsWidget(QtGui.QWidget):
         
     @QtCore.Slot()    
     def getNAV(self):
-        # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022
+        conn = sqlite3.connect('HSAsserts.db')
+        cursor = conn.cursor() 
+        navs = []
+                                  #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.NetvalueMarket ='OF' and a.code= c.code and a.sumvollum !=0  
+        cursor.execute("select c.Code from b_code c where c.Enable=1 and c.NetvalueMarket ='OF'")
+        codes = cursor.fetchall() # select c.Code from b_code c where c.Enable=1 and c.NetvalueMarket ='OF'
+        progress = QtGui.QProgressDialog("Get Navs...", "Abort", 0, len(codes), self)
+        progress.setWindowTitle('PortfoliMan')
+        progress.setWindowModality(QtCore.Qt.WindowModal)
+        for r in range(len(codes)):              
+            fundCode = codes[r][0]
+            nav = SinaQuote.GetNav(fundCode)
+            if nav != None :
+                navs.append( nav )
+            progress.setValue(r)
+            QtCore.QCoreApplication.processEvents()
+            import time
+            time.sleep(1)
+            if progress.wasCanceled() :
+                return
+        progress.setValue(len(codes)) 
+        
+        sql = "INSERT OR REPLACE INTO D_LatestNetvalue VALUES (?, ?, ?, ?)"
+        cursor.executemany(sql,navs)
+        conn.commit()
+        QtGui.QMessageBox.information(self,self.tr('Get Navs'), self.tr('[{0}] records updated.'.format(len(navs))) , QtGui.QMessageBox.Ok)
+        conn.close()          
+        with open('D_LatestNetvalue.csv', 'w', newline='') as csvfile:
+            fieldnames = ['Code', 'Tdate', 'Netvalue','SumNetvalue']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow( dict( Code ='D_LatestNetvalue', Tdate='',Netvalue='',SumNetvalue='' ) )
+            writer.writeheader()
+            for nav in navs:
+                writer.writerow(dict( Code =nav[0], Tdate=nav[1],Netvalue=nav[2],SumNetvalue=nav[3] ))
+                
+
         

@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import urllib.request
 from datetime import datetime
-
+from io import StringIO
+import json
 
 def GetQuote(stockCode):
     url = "http://hq.sinajs.cn/list=" + stockCode
@@ -59,7 +60,20 @@ def GetQuote(stockCode):
                 }
 
     stock_df = pd.DataFrame(list(stock_dict.values()),index=list(stock_dict.keys()) )
-    return stock_df              
-            
+    return stock_df   
+
+def GetNav(fundCode):
+
+    # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022
+    url = "http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=" + fundCode
+    try:
+        response = urllib.request.urlopen(url)
+        nav_detail = response.read().decode('gb2312')        
+        nav_obj = json.load(StringIO(nav_detail))
+        latest_Nav_Item = nav_obj['result']['data']['data'][0]
+        return (fundCode, latest_Nav_Item['fbrq'][:10] , float( latest_Nav_Item['jjjz'] ), float( latest_Nav_Item['ljjz'] ) )  
+    except:
+        return None     
+               
 #sdf = GetQuote('sh601166,hk00998')
 #print(sdf)

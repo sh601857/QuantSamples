@@ -113,31 +113,50 @@ class HKAssertsWidget(QtGui.QWidget):
         conn.close() 
         
     @QtCore.Slot()
-    def importT(self):
-        
-        
-        fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import trades"), "", ("csv Files (*.csv)") ) [0]
-        
+    def importT(self):      
+        fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
+        if fileName == '' :
+            return        
         conn = sqlite3.connect('HKAsserts.db')
         cursor = conn.cursor()
-        sql = "INSERT OR REPLACE INTO D_Trade VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         
-        with open(fileName, newline='', encoding='utf-8') as f:
+        with open(fileName, newline='', encoding='gb2312') as f:
             reader = csv.reader(f)
             i=int(0)
             records=int(0)
+            tableName = ''
+            sql=''
             for row in reader:
                 if i == 0 : 
-                    i=i+1
+                    tableName = row[0]
+                    i = i+1
+                    if tableName == 'D_Trade':
+                        sql = "INSERT OR REPLACE INTO D_Trade VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    elif tableName == 'B_Code':     
+                        sql = "INSERT OR REPLACE INTO B_Code VALUES  (?, ?, ?, ?, ?, ?, ?)"
+                    else:
+                        return
                     continue
-                if len(row)< 15 :
-                    continue
+                if i==1 : # row[1]   table header
+                    i = i+1
+                    continue                               
+                if tableName == 'D_Trade':
+                    if len(row)< 17 :
+                        continue                    
+                    sqllist = ( row[0],row[1],row[15],row[3],row[4],row[5],row[14],row[7],row[16] )
+                    cursor.execute(sql,sqllist)
+                    records=records+1
+                elif tableName == 'B_Code': 
+                    if len(row)< 7 :
+                        continue                    
+                    sqltuple = ( row[0],row[1],row[2],row[3] if row[3] !='' else None ,row[4]  if row[4] !='' else None ,row[5]  if row[5] !='' else None ,row[6] )
+                    cursor.execute(sql,sqltuple)
+                    records=records+1                      
+                else:
+                    return 
                 
-                sqllist = ( row[1],row[0],row[15],row[3],row[5],row[4],row[14],row[7] )
-                cursor.execute(sql,sqllist)
-                records=records+1
             conn.commit()
-            QtGui.QMessageBox.information(self,self.tr('Import trades'), self.tr('[{0}] records imported.'.format(records)) , QtGui.QMessageBox.Ok)
+            QtGui.QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [1]'.format(records,tableName)) , QtGui.QMessageBox.Ok)
         conn.close()                
         pass
     
