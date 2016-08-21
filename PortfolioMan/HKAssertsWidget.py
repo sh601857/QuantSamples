@@ -162,6 +162,8 @@ class HKAssertsWidget(QtGui.QWidget):
     
     @QtCore.Slot()
     def quotes(self):
+        QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+        
         conn = sqlite3.connect('HKAsserts.db')
         cursor = conn.cursor()        
         stocks=''
@@ -178,12 +180,14 @@ class HKAssertsWidget(QtGui.QWidget):
             sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
             cursor.execute(sql,sqltuple)
         conn.commit()
+        conn.close() 
+        QtGui.QApplication.restoreOverrideCursor()
         QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
-        conn.close()  
+        
         
     @QtCore.Slot()
     def updatehkd2rmb(self):
-        
+        QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         url = "http://www.sse.com.cn/services/hkexsc/home/"
         urllib.request.urlretrieve(url,'local_filename.html')
         
@@ -200,7 +204,7 @@ class HKAssertsWidget(QtGui.QWidget):
                 cursor.execute('update d_param set HKD2RMB=?' , (self.hkd2rmb,))
                 conn.commit()
                 conn.close()                 
-                
+                QtGui.QApplication.restoreOverrideCursor()
                 QtGui.QMessageBox.information(self,self.tr('Update HKD2RMB'), self.tr('HKD2RMB = [{0}].'.format(self.hkd2rmb)) , QtGui.QMessageBox.Ok)
-    
-        pass
+        else:
+            QtGui.QApplication.restoreOverrideCursor()

@@ -8,6 +8,7 @@ from PySide import QtCore
 from PySide import QtGui
 import HKAssertsWidget
 import HSAssertsWidget
+import HSTradesWidget
 import PlotWidget
 
 class MainW(QtGui.QMainWindow):
@@ -66,11 +67,12 @@ class MainW(QtGui.QMainWindow):
         self.HKWgt =  HKAssertsWidget.HKAssertsWidget()
         self.plotWgt = PlotWidget.PlotWidget()  # QtGui.QWidget()
         self.HSAWgt = HSAssertsWidget.HSAssertsWidget()
-        
+        self.HSTradeWgt = HSTradesWidget.HSTradesWidget()
         self.thirdPageWidget =  QtGui.QWidget()
 
         self.censw =  QtGui.QStackedWidget()
         self.censw.addWidget(self.HSAWgt)
+        self.censw.addWidget(self.HSTradeWgt)
         self.censw.addWidget(self.HKWgt)
         self.censw.addWidget(self.plotWgt)
         
@@ -112,6 +114,8 @@ class MainW(QtGui.QMainWindow):
             self.censw.setCurrentWidget(self.plotWgt)
         elif wgtID == 10:
             self.censw.setCurrentWidget(self.HSAWgt)
+        elif wgtID == 11:
+            self.censw.setCurrentWidget(self.HSTradeWgt)
         else:
             self.censw.setCurrentWidget(self.thirdPageWidget)
             

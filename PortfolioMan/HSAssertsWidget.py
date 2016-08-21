@@ -143,6 +143,9 @@ class HSAssertsWidget(QtGui.QWidget):
     
     @QtCore.Slot()
     def quotes(self):
+        
+        QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+        
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()        
         stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0  
@@ -162,8 +165,10 @@ class HSAssertsWidget(QtGui.QWidget):
             sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(CValue) )
             cursor.execute(sql,sqltuple)
         conn.commit()
+        conn.close() 
+        QtGui.QApplication.restoreOverrideCursor()
         QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
-        conn.close()  
+ 
         
     @QtCore.Slot()    
     def getNAV(self):

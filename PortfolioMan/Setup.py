@@ -4,7 +4,7 @@ from cx_Freeze import setup, Executable
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {"packages": ["os"], 
                      "includes": ["matplotlib.backends.backend_qt4agg","matplotlib.pyplot"],
-                     "include_files":[('HKAsserts.db', 'HKAsserts.db'),('PortfolioMan.ico', 'PortfolioMan.ico')] , 
+                     "include_files":[('HKAsserts.db', 'HKAsserts.db'),('HSAsserts.db', 'HSAsserts.db'),('PortfolioMan.ico', 'PortfolioMan.ico')] , 
                      "icon": "PortfolioMan.ico"
                      }
 
