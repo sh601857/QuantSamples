@@ -189,7 +189,7 @@ class HSAssertsWidget(QtGui.QWidget):
             progress.setValue(r)
             QtCore.QCoreApplication.processEvents()
             import time
-            time.sleep(1)
+            time.sleep(0.5)
             if progress.wasCanceled() :
                 return
         progress.setValue(len(codes)) 
