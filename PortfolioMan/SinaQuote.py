@@ -63,7 +63,8 @@ def GetQuote(stockCode):
     return stock_df   
 
 def GetNav(fundCode):
-
+    import socket
+    socket.setdefaulttimeout(10.0) 
     # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022
     url = "http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=" + fundCode
     try:

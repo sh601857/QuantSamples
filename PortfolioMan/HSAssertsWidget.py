@@ -197,7 +197,7 @@ class HSAssertsWidget(QtGui.QWidget):
         sql = "INSERT OR REPLACE INTO D_LatestNetvalue VALUES (?, ?, ?, ?)"
         cursor.executemany(sql,navs)
         conn.commit()
-        QtGui.QMessageBox.information(self,self.tr('Get Navs'), self.tr('[{0}] records updated.'.format(len(navs))) , QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(self,self.tr('Get Navs'), self.tr('[{0}/{1}] records updated.'.format(len(navs),len(codes))) , QtGui.QMessageBox.Ok)
         conn.close()          
         with open('D_LatestNetvalue.csv', 'w', newline='') as csvfile:
             fieldnames = ['Code', 'Tdate', 'Netvalue','SumNetvalue']
