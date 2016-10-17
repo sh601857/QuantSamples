@@ -181,11 +181,18 @@ class HSAssertsWidget(QtGui.QWidget):
         progress = QtGui.QProgressDialog("Get Navs...", "Abort", 0, len(codes), self)
         progress.setWindowTitle('PortfoliMan')
         progress.setWindowModality(QtCore.Qt.WindowModal)
+        failedCodes=[]
         for r in range(len(codes)):              
             fundCode = codes[r][0]
             nav = SinaQuote.GetNav(fundCode)
             if nav != None :
                 navs.append( nav )
+            else:
+                nav = SinaQuote.GetNav(fundCode)   #try again
+                if nav != None :
+                    navs.append( nav )
+                else:
+                    failedCodes.append(fundCode)   #failed again         
             progress.setValue(r)
             QtCore.QCoreApplication.processEvents()
             import time
@@ -197,7 +204,7 @@ class HSAssertsWidget(QtGui.QWidget):
         sql = "INSERT OR REPLACE INTO D_LatestNetvalue VALUES (?, ?, ?, ?)"
         cursor.executemany(sql,navs)
         conn.commit()
-        QtGui.QMessageBox.information(self,self.tr('Get Navs'), self.tr('[{0}/{1}] records updated.'.format(len(navs),len(codes))) , QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(self,self.tr('Get Navs'), self.tr('[{0}/{1}] records updated. Failed codes {2}'.format(len(navs),len(codes),failedCodes)) , QtGui.QMessageBox.Ok)
         conn.close()          
         with open('D_LatestNetvalue.csv', 'w', newline='') as csvfile:
             fieldnames = ['Code', 'Tdate', 'Netvalue','SumNetvalue']

@@ -73,7 +73,7 @@ def GetNav(fundCode):
         nav_obj = json.load(StringIO(nav_detail))
         latest_Nav_Item = nav_obj['result']['data']['data'][0]
         return (fundCode, latest_Nav_Item['fbrq'][:10] , float( latest_Nav_Item['jjjz'] ), float( latest_Nav_Item['ljjz'] ) )  
-    except:
+    except:        
         return None     
                
 #sdf = GetQuote('sh601166,hk00998')

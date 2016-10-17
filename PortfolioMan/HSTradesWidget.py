@@ -56,6 +56,7 @@ class HSTradesWidget(QtGui.QWidget):
         order by t.TDate DESC".format( self.cbSecurity.itemData( self.cbSecurity.currentIndex() ) , self.cbAccount.currentText() )   
         
         volList =[]
+        tdateList = []
         for row in  cursor.execute(sql):
             itemrow =[]
             itemrow.append( QtGui.QStandardItem(row[0]) ) # TDate                
@@ -67,6 +68,7 @@ class HSTradesWidget(QtGui.QWidget):
             itemrow.append( QtGui.QStandardItem(str(row[6] ))) # Volume
             self.smAsserts.appendRow( itemrow )
             volList.append(row[6])
+            tdateList.append(row[0])
         itemrow =[]
         itemrow.append( QtGui.QStandardItem() ) # TDate                
         itemrow.append( QtGui.QStandardItem() ) # Code
@@ -77,14 +79,20 @@ class HSTradesWidget(QtGui.QWidget):
         itemrow.append( QtGui.QStandardItem(str( sum(volList ))) ) # Volume
         self.smAsserts.insertRow(0, itemrow )             
         
-        totalSell=0.0
+        for i in range(0, len(volList)-1):      # 合并同一天的交易
+            if tdateList[i] == tdateList[i+1] :
+                volList[i+1] = volList[i+1] + volList[i]
+                volList[i] = 0
+                
+        totalSell=0.0                           # 累计卖出量
         for v in volList:
             if v<0 :
                 totalSell = totalSell+v
+                
         for i in range( len(volList)-1, -1, -1):
             if volList[i] > 0 :
                 totalSell = totalSell + volList[i]
-                if totalSell > 0  :
+                if totalSell > 0  :            # 累计买入超过累计卖出
                     self.smAsserts.item(i+1,0).setBackground( QtGui.QBrush(QtGui.QColor(255, 0, 0, 127)) )
                     self.smAsserts.item(0,0).setText( str( totalSell ) )
                     break
