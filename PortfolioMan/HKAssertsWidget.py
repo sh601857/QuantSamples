@@ -156,7 +156,7 @@ class HKAssertsWidget(QtGui.QWidget):
                     return 
                 
             conn.commit()
-            QtGui.QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [1]'.format(records,tableName)) , QtGui.QMessageBox.Ok)
+            QtGui.QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [{1}]'.format(records,tableName)) , QtGui.QMessageBox.Ok)
         conn.close()                
         pass
     
