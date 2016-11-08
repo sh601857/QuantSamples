@@ -9,7 +9,7 @@ import math
 #engine = create_engine('sqlite:///:HKI.db')
 
 conn = sqlite3.connect('HKI.db')
-r = pd.read_sql_query('SELECT * FROM HKITRI where secid=\'HSCEI\' ORDER BY tradedate', conn)
+r = pd.read_sql_query('SELECT * FROM HKITRI where secid=\'HSI\' ORDER BY tradedate', conn)
 
 NDays = 3;
 

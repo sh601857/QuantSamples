@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS HKITRI (
     )
 """)
 
+#cursor.execute("""
+#CREATE TABLE IF NOT EXISTS HKIK (
+    #secid text NOT NULL,
+    #tradedate text,
+	#open real,
+	#high real,
+	#low real,
+    #closeprice real,
+	#vol real,
+	#amount,
+    #PRIMARY KEY (secid,tradedate)
+    #)
+#""")
+
 sql = "INSERT OR IGNORE INTO HKITRI VALUES (?, ?, ?)"
 
 for sday in kd_HSI.tradeDate.values: #r.date :
@@ -86,7 +100,7 @@ rd.replace({'ticker':'HSI'}, 'SH900998',inplace=True)
 rd.replace({'ticker':'HSCEI'}, 'SH900999',inplace=True)
 print(rd)
 
-rd.to_csv("day/Day.txt", header=False, index=False, na_rep='0' , sep= ' ',float_format ="%.2f")
+rd.to_csv("day/Day.txt", header=False, index=False, na_rep='0' , sep= ' ',float_format ="%.3f")
 
 
 
