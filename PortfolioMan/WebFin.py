@@ -52,7 +52,7 @@ def GetStk_Holder_Count(stockCode):
 
     return ret
 
-stock = '601318'
+stock = '601288'
 ret = GetStk_Holder_Count(stock)
 if len(ret) >0 :
     conn = sqlite3.connect('StockDB.db')
