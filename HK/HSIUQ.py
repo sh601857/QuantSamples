@@ -9,6 +9,11 @@ import numpy as np
 import pandas as pd
 import sys
 
+from uqer import Client
+
+uqer = Client(username='huyijiong@139.com', password='qwe123!@#')
+uqer.download_data( 'HKI.csv' )
+
 kd = pd.read_csv('HKI.csv', index_col=0)
 kd['closeIndexR'] = kd['closeIndex']
 kd_HSI = kd[kd.ticker=='HSI']
@@ -30,12 +35,12 @@ CREATE TABLE IF NOT EXISTS HKITRI (
 #CREATE TABLE IF NOT EXISTS HKIK (
     #secid text NOT NULL,
     #tradedate text,
-	#open real,
-	#high real,
-	#low real,
+        #open real,
+        #high real,
+        #low real,
     #closeprice real,
-	#vol real,
-	#amount,
+        #vol real,
+        #amount,
     #PRIMARY KEY (secid,tradedate)
     #)
 #""")
@@ -54,7 +59,7 @@ for sday in kd_HSI.tradeDate.values: #r.date :
     except:
         print("Unexpected error:", sys.exc_info()[0])
         continue
-    
+
     with codecs.open(cash, encoding='utf-16-le') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='\t', quoting=csv.QUOTE_ALL)
         inserted=0
@@ -94,13 +99,15 @@ kd_HSI['highestIndex'] = kd_HSI['highestIndex'] * mlt
 kd_HSI['lowestIndex'] = kd_HSI['lowestIndex'] * mlt 
 kd_HSI['closeIndex'] = kd_HSI['closeIndexR'] 
 
-rd = pd.concat([kd_HSCEI, kd_HSI] )
-rd = rd.drop('closeIndexR',axis=1)
-rd.replace({'ticker':'HSI'}, 'SH900998',inplace=True)
-rd.replace({'ticker':'HSCEI'}, 'SH900999',inplace=True)
-print(rd)
+#rd = pd.concat([kd_HSCEI, kd_HSI] )
+#rd = rd.drop('closeIndexR',axis=1)
+#rd.replace({'ticker':'HSI'}, 'SH900998',inplace=True)
+#rd.replace({'ticker':'HSCEI'}, 'SH900999',inplace=True)
+kd_HSI.drop(['closeIndexR','ticker'],axis=1,inplace=True)
+kd_HSCEI.drop(['closeIndexR','ticker'],axis=1,inplace=True)
 
-rd.to_csv("day/Day.txt", header=False, index=False, na_rep='0' , sep= ' ',float_format ="%.3f")
+kd_HSI.to_csv("day/SH900998.txt", header=False, index=False, na_rep='0' , sep= ',',float_format ="%.3f")
+kd_HSCEI.to_csv("day/SH900999.txt", header=False, index=False, na_rep='0' , sep= ',',float_format ="%.3f")
 
 
 
