@@ -9,7 +9,7 @@ import talib as ta
 import math
 
 tickers = ['00811','00939','00966','00998','01177','01288','01339','01398','01918','01988',
-           '02318','02328','02883','03288','03618','03899','03968','03988','06818']
+           '02318','02328','02883','03328','03618','03899','03968','03988','06818']
 
 hkd = pd.read_csv('HKRawQ/HKD2CNY.csv', index_col=[0] ,delimiter=',')
 
@@ -29,10 +29,14 @@ for ticker in tickers:
     dat['FFQM'] = 1.0
     
     nadat = dat.as_matrix( columns=['FFQM','preClosePrice','actPreClosePrice','openPrice','highestPrice','lowestPrice','closePrice','turnoverVol','turnoverValue','midRate'])
-    for i in range(len(nadat)-2, -1, -1):
-        nadat[i,0] = nadat[i+1,0] * nadat[i+1,1] / nadat[i+1,2]
+    
+    #复权
+    #for i in range(len(nadat)-2, -1, -1):
+    #    nadat[i,0] = nadat[i+1,0] * nadat[i+1,1] / nadat[i+1,2]
     
     nadat[:,0] = nadat[:,0] * nadat[:,-1]
+    
+    
     for col in range(3, 7):
         nadat[:,col] = nadat[:,col] * nadat[:,0]
     
