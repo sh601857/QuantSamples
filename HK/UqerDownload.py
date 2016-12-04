@@ -12,6 +12,6 @@ tickers = ['00811','00902','00939','00966','00998', '01071', '01177','01288','01
 
 for ticker in tickers:
     uqer.download_data( filename='HKRawQ/{0}.csv'.format(ticker) )
-    
+
 uqer.download_data( filename='HKRawQ/HKD2CNY.csv' )    
 
