@@ -46,8 +46,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+#temp data
+HK/HKRawQ/
+
 #python cache
 __pycache__/
 PortfolioMan/local_filename.html
-PortfolioMan/local_filename.html
-PortfolioMan/local_filename.html
+
