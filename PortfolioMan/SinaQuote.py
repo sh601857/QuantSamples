@@ -10,7 +10,7 @@ def GetQuote(stockCode):
     url = "http://hq.sinajs.cn/list=" + stockCode
     response = urllib.request.urlopen(url)
     stocks_detail = response.read().decode('gb2312')  
-    
+
     stock_details = stocks_detail.split(';\n')
     stock_dict = dict()
     for stock_detail in stock_details:
@@ -38,7 +38,7 @@ def GetQuote(stockCode):
                 'high_52W': float(stock[15]),  
                 'low_52W': float(stock[16]) ,
                 'datetime': datetime.strptime(stock[17]+' ' + stock[18][0:-1], '%Y/%m/%d %H:%M')
-                }
+            }
         else :
             stock_dict[fcode] = {
                 'code': fcode,
@@ -57,7 +57,7 @@ def GetQuote(stockCode):
                 'A': float(stock[9]) ,  
 
                 'datetime': datetime.strptime(stock[30]+ stock[31], '%Y-%m-%d%H:%M:%S')
-                }
+            }
 
     stock_df = pd.DataFrame(list(stock_dict.values()),index=list(stock_dict.keys()) )
     return stock_df   
@@ -75,6 +75,6 @@ def GetNav(fundCode):
         return (fundCode, latest_Nav_Item['fbrq'][:10] , float( latest_Nav_Item['jjjz'] ), float( latest_Nav_Item['ljjz'] ) )  
     except:        
         return None     
-               
+
 #sdf = GetQuote('sh601166,hk00998')
 #print(sdf)

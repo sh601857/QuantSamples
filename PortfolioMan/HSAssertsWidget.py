@@ -22,19 +22,19 @@ class HSAssertsWidget(QtGui.QWidget):
         self.smAsserts.setColumnCount(8)
         self.smAsserts.setHorizontalHeaderLabels(['Name','Code','Tdate','Price','SumVollum','CValue','Cost','Gain'])
         self.tvAsserts.setModel(self.smAsserts)
-    
+
         importBtn = QtGui.QPushButton(self.tr("Import"))
         quoteBtn = QtGui.QPushButton(self.tr("Quotes"))
         navBtn = QtGui.QPushButton(self.tr("NetValue"))
         updateBtn = QtGui.QPushButton(self.tr("Update"))      
-    
+
         buttonBox = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
-    
+
         buttonBox.addButton(importBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(quoteBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(navBtn, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(updateBtn, QtGui.QDialogButtonBox.ActionRole) 
-    
+
         layout =  QtGui.QVBoxLayout()        
         self.tvAsserts.setSizePolicy( QtGui.QSizePolicy.Policy.Expanding, QtGui.QSizePolicy.Policy.Expanding )
         layout.addWidget(self.tvAsserts)
@@ -46,14 +46,14 @@ class HSAssertsWidget(QtGui.QWidget):
         importBtn.clicked.connect(self.importT)
         quoteBtn.clicked.connect(self.quotes)        
         navBtn.clicked.connect(self.getNAV)   
-        
+
         self.loadData()
-        
+
     @QtCore.Slot()
     def loadData(self):
         if( self.smAsserts.rowCount() >0 ):
             self.smAsserts.removeRows(0, self.smAsserts.rowCount() )
-            
+
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()            
         totalCV = 0.0
@@ -91,8 +91,8 @@ class HSAssertsWidget(QtGui.QWidget):
         except:
             pass       
         conn.close() 
-        
-        
+
+
     @QtCore.Slot()
     def importT(self):    
         fileName = QtGui.QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
@@ -100,7 +100,7 @@ class HSAssertsWidget(QtGui.QWidget):
             return
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()
-        
+
         with open(fileName, newline='', encoding='gb2312') as f:
             reader = csv.reader(f)
             i=int(0)
@@ -117,7 +117,7 @@ class HSAssertsWidget(QtGui.QWidget):
                         sql = "INSERT OR REPLACE INTO B_Code VALUES  (?, ?, ?, ?, ?, ?, ?)"
                     else:
                         return
-                    
+
                     continue
                 if i==1 : # row[1]   table header
                     i = i+1
@@ -129,23 +129,23 @@ class HSAssertsWidget(QtGui.QWidget):
                     sqltuple = ( row[0],row[1],row[4],row[3],row[5],row[6],row[8], abs(abs(float(row[8]))-abs(float(row[7]))) if float(row[7])>0 else 0.0 , row[9] )                       
                     cursor.execute(sql,sqltuple)
                     records=records+1                    
-                    
+
                 elif tableName == 'B_Code':     
                     sqltuple = ( row[0],row[1],row[2],row[3] if row[3] !='' else None ,row[4]  if row[4] !='' else None ,row[5]  if row[5] !='' else None ,row[6] )
                     cursor.execute(sql,sqltuple)
                     records=records+1                      
                 else:
                     return                
-                
+
             conn.commit()
             QtGui.QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [{1}].'.format(records,tableName)) , QtGui.QMessageBox.Ok)
         conn.close()             
-    
+
     @QtCore.Slot()
     def quotes(self):
-        
+
         QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        
+
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()        
         stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0  
@@ -154,7 +154,7 @@ class HSAssertsWidget(QtGui.QWidget):
                 stocks = row[1].lower() + row[0]
             else:
                 stocks = stocks + ',' + row[1].lower()+row[0]
-                
+
         qd = SinaQuote.GetQuote( stocks )
         #print(qd)
         sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
@@ -168,14 +168,14 @@ class HSAssertsWidget(QtGui.QWidget):
         conn.close() 
         QtGui.QApplication.restoreOverrideCursor()
         QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
- 
-        
+
+
     @QtCore.Slot()    
     def getNAV(self):
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor() 
         navs = []
-                                  #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.NetvalueMarket ='OF' and a.code= c.code and a.sumvollum !=0  
+                                    #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.NetvalueMarket ='OF' and a.code= c.code and a.sumvollum !=0  
         cursor.execute("select c.Code from b_code c where c.Enable=1 and c.NetvalueMarket ='OF'")
         codes = cursor.fetchall() # select c.Code from b_code c where c.Enable=1 and c.NetvalueMarket ='OF'
         progress = QtGui.QProgressDialog("Get Navs...", "Abort", 0, len(codes), self)
@@ -200,7 +200,7 @@ class HSAssertsWidget(QtGui.QWidget):
             if progress.wasCanceled() :
                 return
         progress.setValue(len(codes)) 
-        
+
         sql = "INSERT OR REPLACE INTO D_LatestNetvalue VALUES (?, ?, ?, ?)"
         cursor.executemany(sql,navs)
         conn.commit()
@@ -213,6 +213,6 @@ class HSAssertsWidget(QtGui.QWidget):
             writer.writeheader()
             for nav in navs:
                 writer.writerow(dict( Code =nav[0], Tdate=nav[1],Netvalue=nav[2],SumNetvalue=nav[3] ))
-                
 
-        
+
+

@@ -68,12 +68,12 @@ if len(ret) >0 :
         PRIMARY KEY (SecID, RepDate)
         )
     """)
-    
+
     sql = "INSERT OR IGNORE INTO Stock_Holders VALUES (?, ?, ?, ?, ?, ?)"
     sqltuplelist = []
     for r in range(len(ret)):
         sqltuplelist.append( (stock, ret.index[r].strftime('%Y-%m-%d'), ret.ix[r,'Holders'], ret.ix[r,'SharesPerHolder'], 
-                                   ret.ix[r,'TotalShares'], ret.ix[r,'CircuShares'] ) )
+                              ret.ix[r,'TotalShares'], ret.ix[r,'CircuShares'] ) )
     cursor.executemany(sql, sqltuplelist)
     conn.commit()			
     conn.close()
