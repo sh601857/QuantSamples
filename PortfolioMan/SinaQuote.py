@@ -65,7 +65,7 @@ def GetQuote(stockCode):
 def GetNav(fundCode):
     import socket
     socket.setdefaulttimeout(10.0) 
-    # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022
+    # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022&num=2000
     url = "http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=" + fundCode
     try:
         response = urllib.request.urlopen(url)
@@ -74,7 +74,48 @@ def GetNav(fundCode):
         latest_Nav_Item = nav_obj['result']['data']['data'][0]
         return (fundCode, latest_Nav_Item['fbrq'][:10] , float( latest_Nav_Item['jjjz'] ), float( latest_Nav_Item['ljjz'] ) )  
     except:        
-        return None     
+        return None 
+    
+def FundAdjNaV(NAV, ACCUM_NAV):
+    AdjNAV = NAV.copy()
+    SR=1.0
+    for r in range(1,len(NAV)):
+        div = (ACCUM_NAV[r] - ACCUM_NAV[r-1]) * SR - (NAV[r] - NAV[r-1])
+        if div > 0.003:   # 分红
+            AdjNAV[r] = ( div  + NAV[r] ) * AdjNAV[r-1] / NAV[r-1] 
+            #print(r, div , SR)
+        elif div< -0.003: # 拆分
+            AdjNAV[r] = ACCUM_NAV[r] * AdjNAV[r-1] / ACCUM_NAV[r-1]
+            SR = NAV[r] / ACCUM_NAV[r] 
+            #print(r, div , SR)
+        else:
+            AdjNAV[r] = NAV[r] * AdjNAV[r-1] / NAV[r-1]
+    return AdjNAV
+
+
+def GetHNav(fundCode):
+    import socket
+    socket.setdefaulttimeout(10.0) 
+    # http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=150022&num=2000
+    url = "http://stock.finance.sina.com.cn/fundInfo/api/openapi.php/CaihuiFundInfoService.getNav?symbol=" + fundCode + "&num=9000"
+    try:
+        response = urllib.request.urlopen(url)
+        nav_detail = response.read().decode('gb2312')        
+        nav_obj = json.load(StringIO(nav_detail))
+        navs = nav_obj['result']['data']['data']
+        ret = pd.DataFrame(navs)
+        ret['fbrq'] = ret['fbrq'].apply(pd.to_datetime ) 
+        ret[['jjjz','ljjz']] = ret[['jjjz','ljjz']].apply(pd.to_numeric) 
+        
+        return  ret
+    except:        
+        return None 
+    
+#hnav = GetHNav('150018')
+#hnav.sort_values(by='fbrq',inplace=True)
+#hnav['FADJ_Nav']=FundAdjNaV(hnav['jjjz'].values,hnav['ljjz'].values)
+#print(hnav)
 
 #sdf = GetQuote('sh601166,hk00998')
+
 #print(sdf)

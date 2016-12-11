@@ -10,6 +10,7 @@ import HKAssertsWidget
 import HSAssertsWidget
 import HSTradesWidget
 import PlotWidget
+import FundGainPlot
 
 class MainW(QtGui.QMainWindow):
 
@@ -25,62 +26,10 @@ class MainW(QtGui.QMainWindow):
             # This is needed to display the app icon on the taskbar on Windows 7
             import ctypes
             myappid = 'PortfolioManHK.1.0.0' # arbitrary string
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)        
-        # create commonds tree        
-        self.cmdmodel = QtGui.QStandardItemModel()
-        parentItem = self.cmdmodel.invisibleRootItem()
-        
-        item = QtGui.QStandardItem(self.tr("1.HS"))
-        item.setData(10,QtCore.Qt.UserRole+1)
-        subitem = QtGui.QStandardItem("Asserts")
-        subitem.setData( 10, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        subitem = QtGui.QStandardItem("Trades")
-        subitem.setData( 11, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        parentItem.appendRow(item)   
-        
-        item = QtGui.QStandardItem(self.tr("2.HK"))
-        item.setData(20,QtCore.Qt.UserRole+1)
-        subitem = QtGui.QStandardItem("Asserts")
-        subitem.setData( 20, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        subitem = QtGui.QStandardItem("Plot")
-        subitem.setData( 21, QtCore.Qt.UserRole+1 )
-        item.appendRow(subitem)
-        parentItem.appendRow(item)
-        
-
-   
-        self.cmdTree = QtGui.QTreeView(self)
-        self.cmdTree.setModel(self.cmdmodel)
-        self.cmdTree.setHeaderHidden(True)
-        self.cmdTree.expandToDepth(2)
-        self.cmdTree.setMinimumWidth(150)
-        dockWidget = QtGui.QDockWidget((""), self)
-        dockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        dockWidget.setWidget(self.cmdTree)
-        dockWidget.setTitleBarWidget(QtGui.QWidget(dockWidget))
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)#hide the titlebar
-
-        #Create central widget			
-        self.HKWgt =  HKAssertsWidget.HKAssertsWidget()
-        self.plotWgt = PlotWidget.PlotWidget()  # QtGui.QWidget()
-        self.HSAWgt = HSAssertsWidget.HSAssertsWidget()
-        self.HSTradeWgt = HSTradesWidget.HSTradesWidget()
-        self.thirdPageWidget =  QtGui.QWidget()
-
-        self.censw =  QtGui.QStackedWidget()
-        self.censw.addWidget(self.HSAWgt)
-        self.censw.addWidget(self.HSTradeWgt)
-        self.censw.addWidget(self.HKWgt)
-        self.censw.addWidget(self.plotWgt)
-        
-        
-        self.censw.addWidget(self.thirdPageWidget)
-        self.censw.setCurrentIndex(0)
-
-        self.setCentralWidget(self.censw)
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            
+        self._createDockCMDTree()
+        self._createCentralWgt()
 
         # Actions
         exitAction = QtGui.QAction('Exit', self)
@@ -101,13 +50,69 @@ class MainW(QtGui.QMainWindow):
         self.setWindowTitle('PorfolioMan')    
         self.showMaximized()
 
-        self.cmdTree.clicked.connect(self.setWidget)
-        
+        self.cmdTree.clicked.connect(self.setWidget)        
         QtCore.QTimer.singleShot(200, self.resetDockWidth)
         
-    @QtCore.Slot()
-    def setWidget(self,index):
-        wgtID = self.cmdmodel.itemFromIndex(index).data(QtCore.Qt.UserRole+1)
+    def _createDockCMDTree(self):
+        # create commonds tree 
+        def createItem( itemData ):
+            item = QtGui.QStandardItem( itemData['text'] )
+            item.setData(itemData['ID'], QtCore.Qt.UserRole+1)
+            item.setFlags( itemData['Flags'] )
+            return item
+        
+        self.cmdmodel = QtGui.QStandardItemModel()
+        parentItem = self.cmdmodel.invisibleRootItem()
+        
+        item = createItem({'text':'1.HS Stock','ID':10,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, })
+        item.appendRow( createItem({'text':'Asserts','ID':10,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        item.appendRow( createItem({'text':'Trades','ID':11,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        parentItem.appendRow(item)        
+
+        item = createItem({'text':'2.HK Stock','ID':20,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, })
+        item.appendRow( createItem({'text':'Asserts','ID':20,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        item.appendRow( createItem({'text':'Plot','ID':21,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        parentItem.appendRow(item)  
+
+        item = createItem({'text':'3.Fund','ID':30,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, })
+        item.appendRow( createItem({'text':'Performance','ID':30,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        item.appendRow( createItem({'text':'Plot','ID':31,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        parentItem.appendRow(item)
+          
+        self.cmdTree = QtGui.QTreeView(self)
+        self.cmdTree.setModel(self.cmdmodel)
+        self.cmdTree.setHeaderHidden(True)
+        self.cmdTree.expandToDepth(2)
+        self.cmdTree.setMinimumWidth(150)
+        dockWidget = QtGui.QDockWidget((""), self)
+        dockWidget.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        dockWidget.setWidget(self.cmdTree)
+        dockWidget.setTitleBarWidget(QtGui.QWidget(dockWidget))
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dockWidget)#hide the titlebar        
+        
+    
+    def _createCentralWgt(self):
+        #Create central widget			
+        self.HKWgt =  HKAssertsWidget.HKAssertsWidget()
+        self.plotWgt = PlotWidget.PlotWidget()  # QtGui.QWidget()
+        self.HSAWgt = HSAssertsWidget.HSAssertsWidget()
+        self.HSTradeWgt = HSTradesWidget.HSTradesWidget()
+        self.thirdPageWidget =  QtGui.QWidget()
+        self.fundGainPlotWidget = FundGainPlot.FundGainPlotWgt()
+    
+        self.censw =  QtGui.QStackedWidget()
+        self.censw.addWidget(self.HSAWgt)
+        self.censw.addWidget(self.HSTradeWgt)
+        self.censw.addWidget(self.HKWgt)
+        self.censw.addWidget(self.plotWgt)
+        self.censw.addWidget(self.fundGainPlotWidget)
+        
+        self.censw.addWidget(self.thirdPageWidget)
+        self.censw.setCurrentIndex(0)
+        self._curWgtID = 10
+        self.setCentralWidget(self.censw)        
+    
+    def setCensWgt(self,wgtID):
         if wgtID == 20:
             self.censw.setCurrentWidget(self.HKWgt)
         elif wgtID==21:
@@ -116,8 +121,18 @@ class MainW(QtGui.QMainWindow):
             self.censw.setCurrentWidget(self.HSAWgt)
         elif wgtID == 11:
             self.censw.setCurrentWidget(self.HSTradeWgt)
+        elif wgtID == 31:
+            self.censw.setCurrentWidget(self.fundGainPlotWidget)    
         else:
             self.censw.setCurrentWidget(self.thirdPageWidget)
+            
+        self._curWgtID = wgtID    
+    
+    @QtCore.Slot()
+    def setWidget(self,index):
+        wgtID = self.cmdmodel.itemFromIndex(index).data(QtCore.Qt.UserRole+1)
+        if( self._curWgtID != wgtID):        
+            self.setCensWgt(wgtID)
             
     @QtCore.Slot()
     def resetDockWidth(self):

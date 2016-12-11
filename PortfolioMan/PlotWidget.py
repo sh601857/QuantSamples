@@ -20,6 +20,7 @@ class PlotWidget(QtGui.QWidget):
         fig = Figure(figsize=(600,600), dpi=72, facecolor=(1,1,1), edgecolor=(0,0,0))
         ax = fig.add_subplot(111)
         ax.plot([0,1])
+        
         # generate the canvas to display the plot
         canvas = FigureCanvas(fig)
         layout =  QtGui.QVBoxLayout()
