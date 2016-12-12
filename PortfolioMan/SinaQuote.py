@@ -103,12 +103,18 @@ def GetHNav(fundCode):
         nav_detail = response.read().decode('gb2312')        
         nav_obj = json.load(StringIO(nav_detail))
         navs = nav_obj['result']['data']['data']
+        # return numpy ndarray
+        #navlist =[]
+        #for nav in navs:
+            #navlist.append( (  np.datetime64(nav['fbrq'][0:10]) , float(nav['jjjz']), float(nav['ljjz']) ) )
+        #ret = np.rec.array(navlist, dtype= np.dtype([('fbrq','datetime64[D]'),('jjjz', float),('ljjz', float) ]))
+        
+        #return a dataframe
         ret = pd.DataFrame(navs)
         ret['fbrq'] = ret['fbrq'].apply(pd.to_datetime ) 
-        ret[['jjjz','ljjz']] = ret[['jjjz','ljjz']].apply(pd.to_numeric) 
-        
+        ret[['jjjz','ljjz']] = ret[['jjjz','ljjz']].apply(pd.to_numeric)
         return  ret
-    except:        
+    except:   
         return None 
     
 #hnav = GetHNav('150018')
