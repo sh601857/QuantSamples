@@ -7,6 +7,16 @@ from io import StringIO
 import json
 import sqlite3
 
+closedQEnd = ['1991-03-31', '1991-06-30', '1994-12-31', '1995-09-30',
+               '1995-12-31', '1996-03-31', '1996-06-30', '1996-09-30',
+               '1997-06-30', '1999-12-31', '2000-09-30', '2000-12-31',
+               '2001-03-31', '2001-06-30', '2001-09-30', '2002-03-31',
+               '2002-06-30', '2002-09-30', '2005-12-31', '2006-09-30',
+               '2006-12-31', '2007-03-31', '2007-06-30', '2007-09-30',
+               '2007-12-31', '2008-09-30', '2011-12-31', '2012-03-31',
+               '2012-06-30', '2012-09-30', '2013-03-31', '2013-06-30',
+               '2016-12-31', '2017-09-30', '2017-12-31']
+
 def GetQuote(stockCode):
     url = "http://hq.sinajs.cn/list=" + stockCode
     response = urllib.request.urlopen(url)
@@ -93,20 +103,20 @@ def FundAdjNaV(NAV, ACCUM_NAV):
             AdjNAV[r] = NAV[r] * AdjNAV[r-1] / NAV[r-1]
     return AdjNAV
 
-def FundFAdjNaVSR(NAV, ACCUM_NAV,SR):
-    AdjNAV = NAV.copy()
-    for r in range(1,len(NAV)):
-        div = (ACCUM_NAV[r] / SR[r] - ACCUM_NAV[r-1] / SR[r-1] )  - (NAV[r] - NAV[r-1])
+def FundFAdjNaVSR( npNav ):
+    npNav['adjNav'] = npNav['jjjz']
+    for r in range(1,len(npNav)):        
+        div = (npNav['ljjz'][r] / npNav['sp'][r] - npNav['ljjz'][r-1] / npNav['sp'][r-1] )  - (npNav['jjjz'][r] - npNav['jjjz'][r-1])
         if div > 0.003:   # 分红
-            AdjNAV[r] = ( div  + NAV[r] ) * AdjNAV[r-1] / NAV[r-1] 
-            print(r, div , SR[r])
+            npNav['adjNav'][r] = ( div  + npNav['jjjz'][r] ) * npNav['adjNav'][r-1] / npNav['jjjz'][r-1] 
+            npNav['div'][r] = div
+            
         elif div< -0.003: # 拆分
-            AdjNAV[r] = ACCUM_NAV[r] * AdjNAV[r-1] / ACCUM_NAV[r-1]
-            #SR = NAV[r] / ACCUM_NAV[r] 
-            print(r, div , SR[r])
+            npNav['adjNav'][r] = npNav['jjjz'][r] * npNav['sp'][r]  / npNav['jjjz'][r-1] / npNav['sp'][r-1] * npNav['adjNav'][r-1] 
+            npNav['div'][r] = div
         else:
-            AdjNAV[r] = NAV[r] * AdjNAV[r-1] / NAV[r-1]
-    return AdjNAV
+            npNav['adjNav'][r] = npNav['jjjz'][r] * npNav['sp'][r]  / npNav['jjjz'][r-1] / npNav['sp'][r-1] * npNav['adjNav'][r-1] 
+    return npNav
 
 
 def GetHNav(fundCode):
@@ -126,29 +136,36 @@ def GetHNav(fundCode):
         #ret = np.rec.array(navlist, dtype= np.dtype([('fbrq','datetime64[D]'),('jjjz', float),('ljjz', float) ]))
         
         #return a dataframe
-        ret = pd.DataFrame(navs)
-        ret['fbrq'] = ret['fbrq'].apply(pd.to_datetime ) 
-        ret[['jjjz','ljjz']] = ret[['jjjz','ljjz']].apply(pd.to_numeric)
-        ret.sort_values(by='fbrq',inplace=True)
-        ret.set_index('fbrq',inplace=True)        
-        ret['SP'] = 1.0
+        #ret = pd.DataFrame(navs)
+        #vadate = [r for r in ret.index if not ret.loc[r,'fbrq'][:10] in closedQEnd ]
+        #ret = ret.loc[ vadate,:]
+
+        navlist =[]
+        for nav in reversed(navs) :
+            if nav['fbrq'][0:10] in closedQEnd:
+                continue
+            navlist.append( ( nav['fbrq'][0:10] , float(nav['jjjz']), float(nav['ljjz']), 1.0, 0.0, 1.0 ) )
+            
+        npNav = np.rec.array(navlist, dtype= np.dtype([('fbrq','object'),('jjjz', float),('ljjz', float) ,('sp', float) ,('div', float),('adjNav', float)]))    
+       
+        # deal with fund split
         conn = sqlite3.connect('FundDB.db')
-        dfSP = pd.read_sql_query('select TDate, Ratio from d_fund_split where SecID="{0}"'.format(fundCode), conn, parse_dates=['TDate'], index_col='TDate')
-        if len(dfSP) > 0:
-            ret.loc[dfSP.index.values,'SP'] = dfSP['Ratio']
-            ret['SP'] = np.cumprod( np.array(ret['SP'].values) )        
-        ret['FADJ_NAV'] = FundFAdjNaVSR(ret['jjjz'].values, ret['ljjz'].values, ret['SP'].values)
-        return  ret
+        cursor = conn.cursor()         
+        for row in  cursor.execute('select TDate, Ratio from d_fund_split where SecID="{0}"'.format(fundCode)):
+            npNav.sp[ npNav.fbrq==row[0] ] = row[1]
+        conn.close()               
+        npNav.sp = np.cumprod( npNav.sp )    
+        npNav = FundFAdjNaVSR(npNav)
+        return  npNav
     except:   
         return None 
     
-hnav = GetHNav('163406')
-
-pd.set_option('display.max_rows', 2000) 
-print( hnav )
+#hnav = GetHNav('100032')
+#np.set_printoptions(threshold=5000)
+#pd.set_option('display.max_rows', 2000) 
+#print( hnav )
 #hnav['FADJ_Nav']=FundAdjNaV(hnav['jjjz'].values,hnav['ljjz'].values)
 #print(hnav)
 
 #sdf = GetQuote('sh601166,hk00998')
-
 #print(sdf)

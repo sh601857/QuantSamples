@@ -14,6 +14,7 @@ class FundGainPlotWgt(QWidget):
         super(FundGainPlotWgt, self).__init__()     
         self.initUI()
         self._funds=[]
+        self._ylim = [100.0,200.0]
 
     def initUI(self):
         # generate the plot
@@ -26,8 +27,9 @@ class FundGainPlotWgt(QWidget):
         self.cbFund = QComboBox()
         self._loadComBoxes()
         self.sdate = QDateEdit( QDate(2014,12,31) )
+        self.sdate.setDisplayFormat('yyyy-MM-dd')
         self.edate = QDateEdit(QDate.currentDate())
-        
+        self.edate.setDisplayFormat('yyyy-MM-dd')
         
         addBtn = QPushButton('Add')
         addBtn.clicked.connect( self.addFund )
@@ -60,27 +62,36 @@ class FundGainPlotWgt(QWidget):
         secID = self.cbFund.itemData( self.cbFund.currentIndex() )
         if secID in self._funds:
             return        
-        hnav = SinaQuote.GetHNav(secID)
-        hnav.sort_values(by='fbrq',inplace=True)
-        #hnav.set_index('fbrq', inplace=True)
-        
-        hnav['FADJ_Nav']=SinaQuote.FundAdjNaV(hnav['jjjz'].values,hnav['ljjz'].values) 
-        #print(hnav)
-        npNav = hnav.values        
-        #npNav.dtype.names = ('fbrq','jjjz','ljjz','FADJ_Nav')
+        npNav = SinaQuote.GetHNav(secID)
+        #stsdate = pd.to_datetime( self.sdate.date().toPython() )
+        #etsdate =  pd.to_datetime( self.edate.date().toPython() ) 
+        stsdate = self.sdate.text()
+        etsdate = self.edate.text()        
+        npNav = npNav[ npNav.fbrq >=stsdate ]
+        npNav = npNav[ npNav.fbrq <=etsdate ]
 
-        stsdate = pd.Timestamp( self.sdate.date().toPython() )
-        etsdate =  pd.Timestamp( self.edate.date().toPython() )   
-
-        npNav = npNav[ npNav[:,0] >= stsdate  ]
-        npNav = npNav[ npNav[:,0] <= etsdate  ]
-        npNav[:,3] = npNav[:,3] / npNav[0,3] *100
+        npNav.adjNav =  npNav.adjNav / npNav.adjNav[0] *100
         
-        self.ax1.plot( npNav[:,0], npNav[:,3] , label=self.cbFund.currentText() )
+        self.ax1.plot( pd.to_datetime( npNav.fbrq ), npNav.adjNav , label=self.cbFund.currentText() )
+        
         leg = self.ax1.legend(loc=0,fontsize=10,frameon=False)
         leg.get_frame().set_facecolor((.94,.94,.94))
+        import matplotlib.dates
+        import datetime
+        xlim = matplotlib.dates.date2num( [self.sdate.date().toPython(), self.edate.date().toPython()+datetime.timedelta(days=2) ] )
+        if np.min( npNav.adjNav ) - 5.0 < self._ylim[0] :
+            self._ylim[0] = np.min( npNav.adjNav ) - 5.0 
+        if np.max( npNav.adjNav ) + 5.0 > self._ylim[1] :
+            self._ylim[1] = np.max( npNav.adjNav ) + 5.0 
+            
+        self.ax1.set_xlim(xlim[0],xlim[1])
+        self.ax1.set_ylim(self._ylim[0],self._ylim[1])
+        self.ax1.set_yscale(u'log')
+        #self.canvas.fig.autofmt_xdate()
         self.canvas.draw_idle()
         self._funds.append(secID)
+        
+        
        
     @Slot()    
     def clearFunds(self) :
