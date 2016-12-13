@@ -83,10 +83,23 @@ class FundGainPlotWgt(QWidget):
             self._ylim[0] = np.min( npNav.adjNav ) - 5.0 
         if np.max( npNav.adjNav ) + 5.0 > self._ylim[1] :
             self._ylim[1] = np.max( npNav.adjNav ) + 5.0 
-            
-        self.ax1.set_xlim(xlim[0],xlim[1])
-        self.ax1.set_ylim(self._ylim[0],self._ylim[1])
+        ysticks = [100]
+        ys = 110
+        while ys < self._ylim[1]: 
+            ysticks.append(ys)
+            ys=ys*1.1
+        ys = 90	
+        while ys > self._ylim[0]: 
+            ysticks.append(ys)
+            ys=ys*0.9
+        ysticks.sort()
         self.ax1.set_yscale(u'log')
+        self.ax1.set_ylim(self._ylim[0],self._ylim[1])
+        self.ax1.yaxis.set_ticks(ysticks) 
+        self.ax1.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f'))
+        self.ax1.yaxis.grid(True,color='0.6', linestyle='-', linewidth=0.5)
+        self.ax1.set_xlim(xlim[0],xlim[1])
+       
         #self.canvas.fig.autofmt_xdate()
         self.canvas.draw_idle()
         self._funds.append(secID)
