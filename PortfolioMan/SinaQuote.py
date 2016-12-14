@@ -108,7 +108,7 @@ def FundFAdjNaVSR( npNav ):
     for r in range(1,len(npNav)):        
         div = (npNav['ljjz'][r] / npNav['sp'][r] - npNav['ljjz'][r-1] / npNav['sp'][r-1] )  - (npNav['jjjz'][r] - npNav['jjjz'][r-1])
         if div > 0.003:   # 分红
-            npNav['adjNav'][r] = ( div  + npNav['jjjz'][r] ) * npNav['adjNav'][r-1] / npNav['jjjz'][r-1] 
+            npNav['adjNav'][r] = ( div  + npNav['jjjz'][r] )  / npNav['jjjz'][r-1]  * npNav['adjNav'][r-1]
             npNav['div'][r] = div
             
         elif div< -0.003: # 拆分
@@ -158,14 +158,14 @@ def GetHNav(fundCode):
         npNav = FundFAdjNaVSR(npNav)
         return  npNav
     except:   
+        #raise
         return None 
     
-#hnav = GetHNav('100032')
+#hnav = GetHNav('159915')
 #np.set_printoptions(threshold=5000)
 #pd.set_option('display.max_rows', 2000) 
-#print( hnav )
-#hnav['FADJ_Nav']=FundAdjNaV(hnav['jjjz'].values,hnav['ljjz'].values)
-#print(hnav)
+#print( hnav[ abs( hnav.div ) >0.003 ] )
+
 
 #sdf = GetQuote('sh601166,hk00998')
 #print(sdf)

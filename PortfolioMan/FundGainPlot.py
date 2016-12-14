@@ -25,6 +25,7 @@ class FundGainPlotWgt(QWidget):
         
         hlayout = QHBoxLayout()
         self.cbFund = QComboBox()
+        self.cbFund.setMaxVisibleItems(30)
         self._loadComBoxes()
         self.sdate = QDateEdit( QDate(2014,12,31) )
         self.sdate.setDisplayFormat('yyyy-MM-dd')
@@ -110,5 +111,6 @@ class FundGainPlotWgt(QWidget):
     def clearFunds(self) :
         self._funds.clear()
         self.ax1.clear()
+        self._ylim = [100.0,200.0]
         self.canvas.draw_idle()
         pass
