@@ -6,6 +6,7 @@ import SinaQuote
 from PySide.QtCore import *
 from PySide.QtGui import *
 import sqlite3
+import csv
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
@@ -14,7 +15,7 @@ class FundGainPlotWgt(QWidget):
         super(FundGainPlotWgt, self).__init__()     
         self.initUI()
         self._funds=[]
-        self._ylim = [100.0,200.0]
+        self._ylim = [100.0,110.0]
 
     def initUI(self):
         # generate the plot
@@ -25,7 +26,7 @@ class FundGainPlotWgt(QWidget):
         
         hlayout = QHBoxLayout()
         self.cbFund = QComboBox()
-        self.cbFund.setMaxVisibleItems(30)
+        self.cbFund.setMaxVisibleItems(60)
         self._loadComBoxes()
         self.sdate = QDateEdit( QDate(2014,12,31) )
         self.sdate.setDisplayFormat('yyyy-MM-dd')
@@ -35,13 +36,17 @@ class FundGainPlotWgt(QWidget):
         addBtn = QPushButton('Add')
         addBtn.clicked.connect( self.addFund )
         clearBtn = QPushButton('Clear')
-        clearBtn.clicked.connect( self.clearFunds)        
+        clearBtn.clicked.connect( self.clearFunds) 
+        importBtn = QPushButton('Import')
+        importBtn.clicked.connect( self.importFundCodes) 
+        
         hlayout.addStretch()
+        hlayout.addWidget(importBtn)
         hlayout.addWidget(self.cbFund)
         hlayout.addWidget(self.sdate)
         hlayout.addWidget(self.edate)
         hlayout.addWidget(addBtn)
-        hlayout.addWidget(clearBtn)
+        hlayout.addWidget(clearBtn)        
         layout =  QVBoxLayout()
         layout.addWidget(self.canvas)
         layout.addLayout( hlayout )
@@ -105,12 +110,54 @@ class FundGainPlotWgt(QWidget):
         self.canvas.draw_idle()
         self._funds.append(secID)
         
-        
        
     @Slot()    
     def clearFunds(self) :
         self._funds.clear()
         self.ax1.clear()
-        self._ylim = [100.0,200.0]
+        self._ylim = [100.0,110.0]
         self.canvas.draw_idle()
         pass
+    
+    @Slot()                
+    def importFundCodes(self) :
+        fileName = QFileDialog.getOpenFileName( self, self.tr("Import csv"), "", ("csv Files (*.csv)") ) [0]
+        if fileName == '' :
+            return        
+        conn = sqlite3.connect('FundDB.db')
+        cursor = conn.cursor()  
+        
+        with open(fileName, newline='', encoding='gb2312') as f:
+            reader = csv.reader(f)
+            i=int(0)
+            records=int(0)
+            tableName = ''
+            sql=''
+            for row in reader:
+                if i==0 : # row[0]   table name
+                    tableName = row[0]
+                    i = i+1
+                    if tableName == 'b_fund':     
+                        sql = "INSERT OR REPLACE INTO b_fund VALUES  (?, ?, ?, ?, ?, ?,?)"
+                    else:
+                        return
+
+                    continue
+                if i==1 : # row[1]   table header
+                    i = i+1
+                    continue
+                if len(row) < 2:
+                    continue                                
+
+                if tableName == 'b_fund':     
+                    sqltuple = ( row[0], row[1], row[2] if row[2] !='' else None , row[3] if row[3] !='' else None , row[4], row[5] , row[6])
+                    cursor.execute(sql,sqltuple)
+                    records=records+1                      
+                else:
+                    return                
+
+            conn.commit()
+            QMessageBox.information(self,self.tr('Import csv'), self.tr('[{0}] records imported to [{1}].'.format(records,tableName)) , QMessageBox.Ok)
+        conn.close()             
+               
+        
