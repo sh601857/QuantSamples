@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #http://data.gtimg.cn/flashdata/hushen/daily/13/sz000750.js
+#http://web.ifzq.gtimg.cn/appstock/app/hkMinute/query?_var=min_data_hk00700&code=hk00700&r=0.23197541709567315
 
 from datetime import datetime
 import webbrowser, urllib.request
@@ -8,23 +9,38 @@ import shutil
 import numpy as np
 import pandas as pd
 import io
+import sys
 
 #http://data.gtimg.cn/flashdata/hk/daily/12/hkHSI.js
-def GetDayKofYear( year , ticker ):
+def GetDayKofYear( year , ticker , df=0):
 
     url = 'http://data.gtimg.cn/flashdata/hk/daily/{0}/{1}.js'.format( year, ticker )
-    cash ='temp.txt'
+    #cash ='temp.txt'
 
-    try:    
-        with urllib.request.urlopen(url) as response, open(cash, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
+    #try:    
+        #with urllib.request.urlopen(url) as response, open(cash, 'wb') as out_file:
+            #shutil.copyfileobj(response, out_file)
+    #except:
+        #print("Unexpected error:", sys.exc_info()[0])
+        #return None
+    try:
+        response = urllib.request.urlopen(url)
+        stocks_detail = response.read()
+        #print( stocks_detail.decode('gb2312')  )
+        
+        dat = np.genfromtxt( io.BytesIO( (stocks_detail) ), comments='\\',dtype="a6,f8,f8,f8,f8,f8",
+                         skip_header=1, skip_footer=1,names="D, O, C, H, L, V")
+        #dat = pd.read_csv(io.StringIO(stocks_detail.decode('gb2312')), sep=' ', header=None, index_col=[0], skiprows=1, skipfooter=1, 
+                          #comment='\\', names="D, O, C, H, L, V" ,encoding='gb2312')
+        if df==0:
+            return dat
+        else:
+            return  pd.DataFrame(dat)
     except:
+        raise
         print("Unexpected error:", sys.exc_info()[0])
-        return None
-
-    dat = np.genfromtxt( cash, comments='\\',dtype="S6,f8,f8,f8,f8,f8",
-                     skip_header=1, skip_footer=1,
-                     names="D, O, C, H, L, V")
+        return None        
+    
     return dat
 
 #http://qt.gtimg.cn/q=sz000858
@@ -156,7 +172,8 @@ def GetLatestQuoteStock( tickers ):
 
 
 
-#dat = GetDayKofYear(16, 'hkHSI')
+#dat = GetDayKofYear(16, 'hk00998',df=1)
+
 #print(dat)
-dat =  GetLatestQuoteStock( 'hkHSI,sh600000' )
-print(dat)
+#dat =  GetLatestQuoteStock( 'hkHSI,sh600000' )
+#print(dat)
