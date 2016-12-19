@@ -172,7 +172,7 @@ def GetLatestQuoteStock( tickers ):
 
 
 
-#dat = GetDayKofYear(16, 'hk00998',df=1)
+#dat = GetDayKofYear('16', 'hk00966',df=1)
 
 #print(dat)
 #dat =  GetLatestQuoteStock( 'hkHSI,sh600000' )
