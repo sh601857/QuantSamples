@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+#http://web.ifzq.gtimg.cn/appstock/app/Minute/query?_var=min_data_sh601288&code=sh601288
 #http://data.gtimg.cn/flashdata/hushen/daily/13/sz000750.js
 #http://web.ifzq.gtimg.cn/appstock/app/hkMinute/query?_var=min_data_hk00700&code=hk00700&r=0.23197541709567315
 
