@@ -546,9 +546,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                          1346,
                          654)}]}
 guimgr.recent-documents = [loc('PortfolioMan.py'),
-                           loc('SinaQuote.py'),
-                           loc('PlotWidget.py'),
-                           loc('../HK/gtimg.py')]
+                           loc('SinaQuote.py')]
 guimgr.visual-state = {loc('file:C:/Users/Administrator/AppData/Local/Programs/Python/Python34/Lib/codecs.py'): {'a'\
         'ttrib-starts': [],
         'first-line': 0,
