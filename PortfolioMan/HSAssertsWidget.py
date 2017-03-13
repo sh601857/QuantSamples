@@ -148,8 +148,8 @@ class HSAssertsWidget(QtGui.QWidget):
 
         conn = sqlite3.connect('HSAsserts.db')
         cursor = conn.cursor()        
-        stocks=''                 #select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0  
-        for row in cursor.execute("select c.Code,TradeMarket from b_code c where c.Enable=1 and c.TradeMarket notnull "):
+        stocks=''                 #select c.Code,TradeMarket from b_code c where c.Enable=1 and c.TradeMarket notnull 
+        for row in cursor.execute("select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0 "):
             if( stocks == ''):
                 stocks = row[1].lower() + row[0]
             else:
