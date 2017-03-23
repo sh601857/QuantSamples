@@ -28,9 +28,12 @@ class HSTradesWidget(QtGui.QWidget):
         layout.addWidget(self.tvAsserts)
         
         hlayout = QtGui.QHBoxLayout()
+        self.ckHoldOnly = QtGui.QCheckBox(self.tr("Hold Only"))
+        self.ckHoldOnly.setChecked(True)
         self.cbType = QtGui.QComboBox()
         self.cbSecurity = QtGui.QComboBox() 
         self.cbAccount = QtGui.QComboBox() 
+        hlayout.addWidget( self.ckHoldOnly )
         hlayout.addWidget( self.cbType  )
         hlayout.addWidget( self.cbSecurity  )
         hlayout.addWidget( self.cbAccount  )
@@ -101,8 +104,11 @@ class HSTradesWidget(QtGui.QWidget):
     def loadSecurity(self,index):
         self.cbSecurity.clear()
         conn = sqlite3.connect('HSAsserts.db')
-        cursor = conn.cursor() 
+        cursor = conn.cursor()
         sql = "select DISTINCT t.code, c.Name from d_trade t , b_code c where t.code = c.code and c.type ='{0}'".format( self.cbType.itemText(index) )
+        if self.ckHoldOnly.isChecked():
+            sql = "select DISTINCT t.code, c.Name from d_trade t , b_code c , v_assets a where t.code = c.code and t.code = a.code and a.SumVollum>0 and c.type ='{0}'".format( self.cbType.itemText(index) )
+        
         for row in  cursor.execute(sql):
             self.cbSecurity.addItem(row[1],row[0])        
         
