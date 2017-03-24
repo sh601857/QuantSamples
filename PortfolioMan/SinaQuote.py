@@ -106,9 +106,11 @@ def FundAdjNaV(NAV, ACCUM_NAV):
 def FundFAdjNaVSR( npNav ):
     npNav['adjNav'] = npNav['jjjz']
     for r in range(1,len(npNav)):        
-        div = (npNav['ljjz'][r] / npNav['sp'][r] - npNav['ljjz'][r-1] / npNav['sp'][r-1] )  - (npNav['jjjz'][r] - npNav['jjjz'][r-1])
+        #div = (npNav['ljjz'][r] / npNav['sp'][r] - npNav['ljjz'][r-1] / npNav['sp'][r-1] )  - (npNav['jjjz'][r] - npNav['jjjz'][r-1])
+        div = (npNav['ljjz'][r] - npNav['ljjz'][r-1]  )  - (npNav['jjjz'][r] * npNav['sp'][r] - npNav['jjjz'][r-1] * npNav['sp'][r-1] )
+        div = div / npNav['sp'][r]
         if div > 0.003:   # 分红
-            npNav['adjNav'][r] = ( div  + npNav['jjjz'][r] )  / npNav['jjjz'][r-1]  * npNav['adjNav'][r-1]
+            npNav['adjNav'][r] = ( div  + npNav['jjjz'][r]  ) * npNav['sp'][r] / (npNav['jjjz'][r-1]  * npNav['sp'][r-1] )  * npNav['adjNav'][r-1]
             npNav['div'][r] = div
             
         elif div< -0.003: # 拆分
@@ -161,9 +163,10 @@ def GetHNav(fundCode):
         #raise
         return None 
     
-#hnav = GetHNav('159915')
+#hnav = GetHNav('163406')#159901
 #np.set_printoptions(threshold=5000)
-#pd.set_option('display.max_rows', 2000) 
+#pd.set_option('display.max_rows', 5000) 
+##print( hnav )
 #print( hnav[ abs( hnav.div ) >0.003 ] )
 
 
