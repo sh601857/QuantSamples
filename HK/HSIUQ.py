@@ -11,8 +11,8 @@ import sys
 
 from uqer import Client
 
-uqer = Client(username='huyijiong@139.com', password='qwe123!@#')
-uqer.download_data( 'HKI.csv' )
+#uqer = Client(username='huyijiong@139.com', password='qwe123!@#')
+#uqer.download_data( 'HKI.csv' )
 
 kd = pd.read_csv('HKI.csv', index_col=0)
 kd['closeIndexR'] = kd['closeIndex']
