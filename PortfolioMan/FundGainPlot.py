@@ -28,7 +28,7 @@ class FundGainPlotWgt(QWidget):
         self.cbFund = QComboBox()
         self.cbFund.setMaxVisibleItems(60)
         self._loadComBoxes()
-        self.sdate = QDateEdit( QDate(2015,12,31) )
+        self.sdate = QDateEdit( QDate(2016,12,30) )
         self.sdate.setDisplayFormat('yyyy-MM-dd')
         self.edate = QDateEdit(QDate.currentDate())
         self.edate.setDisplayFormat('yyyy-MM-dd')
