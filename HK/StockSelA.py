@@ -4,7 +4,7 @@ import numpy as np
 import xlwings as xw
 
 
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA14_16.xlsx')
 sht = wb.sheets['I']
 row =1
 for s in wb.sheets:
