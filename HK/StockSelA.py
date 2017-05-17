@@ -4,7 +4,7 @@ import numpy as np
 import xlwings as xw
 
 
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA14_16.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_2.xlsx')
 sht = wb.sheets['I']
 row =1
 for s in wb.sheets:
@@ -14,9 +14,9 @@ for s in wb.sheets:
         sht.range((row,3)).value =  formal
         s.range('A1').value =  '=HYPERLINK(\"#\'{0}\'!C{2}\",\"{1}\")'.format(sht.name, 'Index', '{0}'.format(row) )
         s.range('A1').column_width = 20
-        wb.sheets['000002'].range('A1:O30').api.Copy()
-        s.range('A1:O30').api.PasteSpecial( -4122 )
-        s.range('A1:O30').columns.autofit()
+        wb.sheets['000002'].range('A1:O50').api.Copy()
+        s.range('A1:O50').api.PasteSpecial( -4122 )
+        s.range('A1:O50').columns.autofit()
         
         row=row+1
 
