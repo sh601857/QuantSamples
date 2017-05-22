@@ -14,6 +14,10 @@ for s in wb.sheets:
         sht.range((row,3)).value =  formal
         s.range('A1').value =  '=HYPERLINK(\"#\'{0}\'!C{2}\",\"{1}\")'.format(sht.name, 'Index', '{0}'.format(row) )
         s.range('A1').column_width = 20
+        
+        wb.sheets['000002'].range('A2:A200').api.Copy()
+        s.range('A2:A200').api.PasteSpecial( -4104 )
+        
         wb.sheets['000002'].range('A1:O200').api.Copy()
         s.range('A1:O200').api.PasteSpecial( -4122 )
         s.range('A1:O200').columns.autofit()
