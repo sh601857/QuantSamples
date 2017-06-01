@@ -4,9 +4,9 @@ import numpy as np
 import xlwings as xw
 
 
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_4.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_5.xlsx')
 sht = wb.sheets['I']
-row =1
+row =2
 for s in wb.sheets:
     if s.name != 'I':
         sht.range((row,2)).value = s.name
