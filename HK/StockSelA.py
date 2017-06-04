@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import xlwings as xw
 
-
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_5.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\uq\\FRA2_Electric_UQ.xlsx')
+#wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_5.xlsx')
+templ = wb.sheets['000651']
 sht = wb.sheets['I']
 row =2
 for s in wb.sheets:
@@ -15,12 +16,12 @@ for s in wb.sheets:
         s.range('A1').value =  '=HYPERLINK(\"#\'{0}\'!C{2}\",\"{1}\")'.format(sht.name, 'Index', '{0}'.format(row) )
         s.range('A1').column_width = 20
         
-        wb.sheets['000002'].range('A2:A200').api.Copy()
+        templ.range('A2:A200').api.Copy()
         s.range('A2:A200').api.PasteSpecial( -4104 )
         
-        wb.sheets['000002'].range('A1:O200').api.Copy()
-        s.range('A1:O200').api.PasteSpecial( -4122 )
-        s.range('A1:O200').columns.autofit()
+        templ.range('A1:Z200').api.Copy()
+        s.range('A1:Z200').api.PasteSpecial( -4122 )
+        s.range('B1:Z200').columns.autofit()
         
         row=row+1
 
