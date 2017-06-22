@@ -18,7 +18,7 @@ hkd.to_csv('HKD2CNY.txt',header=False, index=False,float_format="%.3f", date_for
            #'02318','02328','02333','02601','02883','03328','03618','03899','03968','03988','06818',
            #'00966','01177']
 #tickers = ['00966','01177']
-tickers = ['02601']
+tickers = ['01336']
 
 for ticker in tickers:
     quote = pd.read_csv('HKRawQ/{0}.csv'.format(ticker), index_col=[0] ,delimiter=',',encoding='gbk')

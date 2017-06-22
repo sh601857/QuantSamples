@@ -71,6 +71,7 @@ class MainW(QtGui.QMainWindow):
 
         item = createItem({'text':'2.HK Stock','ID':20,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, })
         item.appendRow( createItem({'text':'Asserts','ID':20,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
+        item.appendRow( createItem({'text':'AH','ID':22,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
         item.appendRow( createItem({'text':'Plot','ID':21,'Flags': QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled, }) )
         parentItem.appendRow(item)  
 
