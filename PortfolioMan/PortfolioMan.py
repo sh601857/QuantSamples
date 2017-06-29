@@ -11,6 +11,7 @@ import HSAssertsWidget
 import HSTradesWidget
 import PlotWidget
 import FundGainPlot
+import AHQuotesWidget
 
 class MainW(QtGui.QMainWindow):
 
@@ -100,6 +101,7 @@ class MainW(QtGui.QMainWindow):
         self.HSTradeWgt = HSTradesWidget.HSTradesWidget()
         self.thirdPageWidget =  QtGui.QWidget()
         self.fundGainPlotWidget = FundGainPlot.FundGainPlotWgt()
+        self.ahQuoteWidget = AHQuotesWidget.AHQuotesWidget()
     
         self.censw =  QtGui.QStackedWidget()
         self.censw.addWidget(self.HSAWgt)
@@ -107,6 +109,7 @@ class MainW(QtGui.QMainWindow):
         self.censw.addWidget(self.HKWgt)
         self.censw.addWidget(self.plotWgt)
         self.censw.addWidget(self.fundGainPlotWidget)
+        self.censw.addWidget(self.ahQuoteWidget)
         
         self.censw.addWidget(self.thirdPageWidget)
         self.censw.setCurrentIndex(0)
@@ -118,6 +121,8 @@ class MainW(QtGui.QMainWindow):
             self.censw.setCurrentWidget(self.HKWgt)
         elif wgtID==21:
             self.censw.setCurrentWidget(self.plotWgt)
+        elif wgtID==22:
+            self.censw.setCurrentWidget(self.ahQuoteWidget)
         elif wgtID == 10:
             self.censw.setCurrentWidget(self.HSAWgt)
         elif wgtID == 11:

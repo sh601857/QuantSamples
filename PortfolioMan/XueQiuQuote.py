@@ -30,6 +30,6 @@ def GetHKQuote(ticker):
         #return None
     
     
-print( GetHKQuote('02601,00998') )
+#print( GetHKQuote('02601,00998') )
 
 
