@@ -8,7 +8,7 @@ import numpy as np
 
 import XueQiuQuote
 
-d = { 'Code':['02601','01366'] ,
+d = { 'Code':['02601','01336'] ,
       'Name':[u'中国太保',u'新华保险'],
       'Price':[None,None],'Pct':[None,None],'PE_TTM':[None,None],'PB':[None,None],'TShares':[None,None],'HShares':[None,None],
       }
@@ -29,7 +29,7 @@ class AHQuoteModel(QAbstractTableModel):
         if index.isValid() == False:
             return None #QVariant()
         if role == Qt.DisplayRole:
-            return self._dfData.iloc[index.row(),index.column()]
+            return str( self._dfData.iloc[index.row(),index.column()] )
         elif role == Qt.EditRole:
             return None #QVariant()
         elif role == Qt.TextAlignmentRole:
@@ -76,13 +76,14 @@ class AHQuoteModel(QAbstractTableModel):
                 tickers = tickers + ',' + self._dfData['Code'][i]
         if tickers != '' :
             qdf = XueQiuQuote.GetHKQuote(tickers) 
+            #print(qdf)
             self.beginResetModel()
             for i in range(len( self._dfData)):
                 self._dfData.loc[i,'Price'] = qdf.loc[self._dfData.loc[i,'Code'], 'close' ]
                 self._dfData.loc[i,'Pct'] = qdf.loc[self._dfData.loc[i,'Code'], 'percentage' ]
                 
             self.endResetModel()
-            print (self._dfData )    
+            #print (self._dfData )    
         
 class AHQuotesWidget(QWidget):
     def __init__(self, parent=None):

@@ -20,7 +20,9 @@ def GetHKQuote(ticker):
         
         nav_detail = response.read().decode('utf-8') 
         df1 = pd.read_json(nav_detail, orient='index',convert_axes=False)
-        df1 = df1[['code','percentage','open','high','low','close','volume','amount', 'pe_ttm','pb','totalShares','float_shares','lot_size','kzz_stock_current']]
+        df1 = df1[['code','percentage','open','high','low','close','volume','amount', 'pe_ttm','pb','totalShares','float_shares','lot_size','kzz_stock_current']]        
+        #df1 = pd.read_json(nav_detail, orient='index',convert_axes=False)
+        #df1 = df1[['code','percentage','open','high','low','close','volume','amount', 'pe_ttm','pb','totalShares','float_shares','lot_size','kzz_stock_current']]
         return df1
         #print(df1)
         #nav_obj = json.load(StringIO(nav_detail))
