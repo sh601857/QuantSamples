@@ -10,10 +10,10 @@ import XueQiuQuote
 
 d = { 'Code':['02601','01336'] ,
       'Name':[u'中国太保',u'新华保险'],
-      'Price':[None,None],'Pct':[None,None],'PE_TTM':[None,None],'PB':[None,None],'TShares':[None,None],'HShares':[None,None],
+      'Price':[None,None],'Pct':[None,None],'PE_TTM':[None,None],'PB':[None,None],'MValue':[None,None],'HShares':[None,None],
       }
 
-_headers = ['Code','Name','Price','Pct','PE_TTM','PB','TShares','HShares']
+_headers = ['Code','Name','Price','Pct','PE_TTM','PB','MValue','HShares']
 class AHQuoteModel(QAbstractTableModel):
     def __init__(self, parent=None):
         super(AHQuoteModel, self).__init__(parent)
@@ -81,6 +81,9 @@ class AHQuoteModel(QAbstractTableModel):
             for i in range(len( self._dfData)):
                 self._dfData.loc[i,'Price'] = qdf.loc[self._dfData.loc[i,'Code'], 'close' ]
                 self._dfData.loc[i,'Pct'] = qdf.loc[self._dfData.loc[i,'Code'], 'percentage' ]
+                self._dfData.loc[i,'PE_TTM'] = qdf.loc[self._dfData.loc[i,'Code'], 'pe_ttm' ]
+                self._dfData.loc[i,'PB'] = qdf.loc[self._dfData.loc[i,'Code'], 'pb' ]
+                self._dfData.loc[i,'MValue'] = int( qdf.loc[self._dfData.loc[i,'Code'], 'totalShares' ] * qdf.loc[self._dfData.loc[i,'Code'], 'close' ] / 100000000 )
                 
             self.endResetModel()
             #print (self._dfData )    

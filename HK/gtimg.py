@@ -13,6 +13,8 @@ import io
 import sys
 
 #http://data.gtimg.cn/flashdata/hk/daily/12/hkHSI.js
+#http://web.sqt.gtimg.cn/q=r_hk00700
+
 def GetDayKofYear( year , ticker , df=0):
 
     url = 'http://data.gtimg.cn/flashdata/hk/daily/{0}/{1}.js'.format( year, ticker )
