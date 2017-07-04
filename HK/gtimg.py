@@ -65,8 +65,8 @@ def GetLatestQuoteStock( tickers ):
         stock = stock_detail.split('~')
         if len(stock) <= 49:
             continue
-        if stock[0][:4] =='v_hk' :
-            fcode = stock[0][2:4] + stock[2]
+        if 'hk' in stock[0]:
+            fcode = 'hk' + stock[2]
             stock_dict[fcode] = {
                 'name': stock[1],
                 'code': fcode,
@@ -97,7 +97,7 @@ def GetLatestQuoteStock( tickers ):
                 #'ask5': float(stock[27]),
                 #'ask5_volume': int(stock[28]) * 100,
                 #'最近逐笔成交': stock[29],  # 换成英文
-                'datetime': datetime.strptime(stock[30], '%Y/%m/%d %H:%M:%S') if stock[0][:4] =='v_hk' else datetime.strptime(stock[30], '%Y%m%d%H%M%S'),
+                'datetime': datetime.strptime(stock[30], '%Y/%m/%d %H:%M:%S') ,
                 #'涨跌': float(stock[31]),  # 换成英文
                 #'涨跌(%)': float(stock[32]),  # 换成英文
                 'H': float(stock[33]),
@@ -113,7 +113,7 @@ def GetLatestQuoteStock( tickers ):
                 #'振幅': float(stock[43]),  # 换成英文
                 'LMV': float(stock[44]) if stock[44] != '' else None,  # 换成英文
                 'MV': float(stock[45]) if stock[44] != '' else None,  # 换成英文
-                'PB': 0.0 if stock[0][:4] =='v_hk' else float(stock[46]),
+                'PB': 0.0 ,
                 'DR': float(stock[47]),
                 'high_52W': float(stock[48]),  # 换成英文
                 'low_52W': float(stock[49])  # 换成英文                        
@@ -152,7 +152,7 @@ def GetLatestQuoteStock( tickers ):
                 #'最近逐笔成交': stock[29],  # 换成英文
                 'datetime': datetime.strptime(stock[30], '%Y%m%d%H%M%S'),
                 #'涨跌': float(stock[31]),  # 换成英文
-                #'涨跌(%)': float(stock[32]),  # 换成英文
+                'PCT': float(stock[32]),  # 换成英文
                 'H': float(stock[33]),
                 'L': float(stock[34]),
                 #'价格/成交量(手)/成交额': stock[35],  # 换成英文
@@ -170,7 +170,7 @@ def GetLatestQuoteStock( tickers ):
                 #.'涨停价': float(stock[47]),  # 换成英文
                 #.'跌停价': float(stock[48])  # 换成英文
                 }
-            stock_df = pd.DataFrame(list(stock_dict.values()),index=list(stock_dict.keys()) )
+        stock_df = pd.DataFrame(list(stock_dict.values()),index=list(stock_dict.keys()) )
     return stock_df  
 
 
@@ -178,5 +178,5 @@ def GetLatestQuoteStock( tickers ):
 #dat = GetDayKofYear('16', 'hk00966',df=1)
 
 #print(dat)
-#dat =  GetLatestQuoteStock( 'hkHSI,sh600000' )
-#print(dat)
+dat =  GetLatestQuoteStock( 'r_hk00966,r_hkHSI' )
+print(dat)
