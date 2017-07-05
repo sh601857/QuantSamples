@@ -99,7 +99,7 @@ def GetLatestQuoteStock( tickers ):
                 #'最近逐笔成交': stock[29],  # 换成英文
                 'datetime': datetime.strptime(stock[30], '%Y/%m/%d %H:%M:%S') ,
                 #'涨跌': float(stock[31]),  # 换成英文
-                #'涨跌(%)': float(stock[32]),  # 换成英文
+                'PCT': float(stock[32]),  # 换成英文
                 'H': float(stock[33]),
                 'L': float(stock[34]),
                 #'价格/成交量(手)/成交额': stock[35],  # 换成英文
