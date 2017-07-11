@@ -9,6 +9,7 @@ from PySide import QtCore
 from PySide import QtGui
 import csv
 import SinaQuote
+import gtimg
 
 class HKAssertsWidget(QtGui.QWidget):
 
@@ -167,23 +168,33 @@ class HKAssertsWidget(QtGui.QWidget):
         conn = sqlite3.connect('HKAsserts.db')
         cursor = conn.cursor()        
         stocks=''
-        for row in cursor.execute("select Code,TradeMarket from b_code where Enable=1"):
+        #for row in cursor.execute("select Code,TradeMarket from b_code where Enable=1"):
+            #if( stocks == ''):
+                #stocks = row[1]+row[0]
+            #else:
+                #stocks = stocks + ',' + row[1]+row[0]            
+        #qd = SinaQuote.GetQuote( stocks )
+        #sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
+        #for i in range( len(qd) ):
+            #sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
+            #cursor.execute(sql,sqltuple)
+			
+        for row in cursor.execute("select c.Code,TradeMarket from b_code c,v_assets a where c.Enable=1 and c.TradeMarket notnull and a.code= c.code and a.sumvollum !=0 "):
             if( stocks == ''):
-                stocks = row[1]+row[0]
+                stocks = 'r_' + row[1] + row[0]
             else:
-                stocks = stocks + ',' + row[1]+row[0]            
-        qd = SinaQuote.GetQuote( stocks )
+                stocks = stocks + ',r_' + row[1]+row[0]  
+                
+        qd = gtimg.GetLatestQuoteStock(stocks)
         sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
         for i in range( len(qd) ):
             sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
             cursor.execute(sql,sqltuple)
-			
-			
-			
+						
         conn.commit()
         conn.close() 
         QtGui.QApplication.restoreOverrideCursor()
-        QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i)) , QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(self,self.tr('Get Quotes'), self.tr('[{0}] records updated.'.format(i+1)) , QtGui.QMessageBox.Ok)
         
         
     @QtCore.Slot()
