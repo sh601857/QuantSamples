@@ -171,14 +171,15 @@ class HKAssertsWidget(QtGui.QWidget):
             if( stocks == ''):
                 stocks = row[1]+row[0]
             else:
-                stocks = stocks + ',' + row[1]+row[0]
-            
-            
+                stocks = stocks + ',' + row[1]+row[0]            
         qd = SinaQuote.GetQuote( stocks )
         sql = "INSERT OR REPLACE INTO D_LatestQuote VALUES (?, ?, ?)"
         for i in range( len(qd) ):
             sqltuple = (qd.iloc[i]['code'][2:] , qd.iloc[i]['datetime'].strftime('%Y-%m-%d %H:%M:%S'), str(qd.iloc[i]['C']) )
             cursor.execute(sql,sqltuple)
+			
+			
+			
         conn.commit()
         conn.close() 
         QtGui.QApplication.restoreOverrideCursor()

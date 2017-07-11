@@ -37,7 +37,7 @@ def GetQuote(stockCode):
                 'PC': float(stock[3]),
                 'H': float(stock[4]),
                 'L': float(stock[5]),                
-                'C': float(stock[6]),
+                'C': float(stock[6]) if float(stock[6])>0.0 else float(stock[3]),
                 #'涨跌': float(stock[7]),  
                 #'涨幅': float(stock[8]),  
                 'bid1': float(stock[9]),
