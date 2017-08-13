@@ -8,7 +8,7 @@ import xlwings as xw
 # sht = wb.sheets['table']
 # print( sht.range("D2").value )
 
-fpath = 'C:\\Users\\Administrator\\Documents\\'
+fpath = 'C:\\Users\\SFF\\Documents\\'
 
 with open( fpath+'wt.xls', 'r', encoding='gbk') as fpr: 
     content = fpr.read() 
@@ -31,5 +31,5 @@ rec[u'股东代码'] = rec[u'股东代码'].map( lambda x: account[x] )
 rec[u'发生日期'] = rec[u'发生日期'].map( lambda x: x.replace(u'-', '')  )
 rec[u'业务名称'] = rec[u'业务名称'].map( lambda x: x.replace(u'清算', '')  )
 
-rec.to_csv(fpath+'wt2.xls', sep=',', index=False, encoding='gbk')
+rec.to_csv(fpath+'table.xls', sep=',', index=False, encoding='gbk')
 print(rec)
