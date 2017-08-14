@@ -16,3 +16,4 @@ for ticker in tickers:
 uqer.download_data( filename='HKRawQ/HKD2CNY.csv' ) 
 uqer.download_data( 'HKI.csv' )
 
+#uqer.download_data( 'StocksFin2B.xlsx' )
