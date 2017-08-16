@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import xlwings as xw
 
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\uq\\FRA2_Ent_UQ.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\uq\\StocksSelR15_08.xlsx')
 #wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_5.xlsx')
-templ = wb.sheets['300144']
+templ = wb.sheets['000028']
 sht = wb.sheets['I']
 row =2
 for s in wb.sheets:
