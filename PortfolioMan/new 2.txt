@@ -1,0 +1,64 @@
+=B125+B126+B127+B133+B135+B142
+
+=B145+B146+B147+B148+B149+B150+B151+B152+B153+B154
+
+=B124+B131+B132+B134+B140+B141+B143+B144
+
+=B159+B178+B181+B182
+
+
+http://bbs.ydss.cn/thread-622168-1-1.html
+
+Sub update_Click()
+    
+Set srcsh = ActiveWorkbook.ActiveSheet
+    For Each sh In Worksheets    '数组
+        If sh.Name <> "Q" And sh.Name <> "1" And sh.Name <> "I" Then
+            For c = 14 To 26 Step 1
+                sh.Columns(c).ColumnWidth = 1
+            Next c
+        End If
+        If sh.Name <> "Q" And sh.Name <> "1" And sh.Name <> "I" And sh.Name <> srcsh.Name Then
+            
+            srcsh.Range("A100:A300").Copy sh.Range("A100:A300")
+            srcsh.Range("B100:O209").Copy
+            sh.Range("B100:O209").PasteSpecial Paste:=xlPasteFormats
+            
+            srcsh.Range("A1:Z90").Copy sh.Range("A1:Z90")
+            srcsh.Range("AA1:AA6").Copy sh.Range("AA1:AA6")
+            srcsh.Range("AA8:AA18").Copy sh.Range("AA8:AA18")
+            
+        End If
+    Next
+
+End Sub
+
+编辑宏程序
+安装ultraedit-32，在宏->编辑宏点击“新建宏”，输入宏名称txt2blk，自定义快捷键ctrl+g，确定后在左边的文本框粘贴入以下代码：
+InsertMode
+ColumnModeOff
+HexOff
+UnixReOff
+SelectAll
+Key DEL
+Paste 
+Top
+"SSSS"
+HexOn
+Key CAPS LOCK
+Top
+OverStrikeMode
+"A50051FF"
+InsertMode
+Find "0D0A"
+Replace All "006E6000"
+Save
+2、代码文件清单的生成
+利用excel文件形成类似如下的代码清单：
+SH600655
+SH600783
+SH600809
+SH600475
+SH600497
+3、复制代码清单
+4、打开ultraedit，在大智慧新一代userdata\block目录新建文件自选XX.blK，并用ultraedit打开，按ctrl+g运行宏，板块文件就做好了

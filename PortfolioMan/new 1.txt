@@ -1,0 +1,3 @@
+Select Code, sum( Volume ) as SumVollum, sum( NetCashFlow ) as Cost
+from D_Trade where account='HYJZX' group by Code order by sumvollum
+
