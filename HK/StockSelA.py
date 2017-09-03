@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import xlwings as xw
 
-wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\uq\\FRA2_BG_UQ.xlsx')
+wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\uq\\FRA2_DivRatio_UQ.xlsx')
 #wb = xw.Book(u'D:\\yun\\百度云\\FinExcels\\reports\\StocksSelA_14_16_5.xlsx')
-templ = wb.sheets['900905']
+templ = wb.sheets['000022']
 sht = wb.sheets['I']
 row =2
 for s in wb.sheets:
@@ -21,8 +21,8 @@ for s in wb.sheets:
         
         templ.range('A1:Z200').api.Copy()
         s.range('A1:Z200').api.PasteSpecial( -4122 )
-        s.range('B1:Z200').columns.autofit()
-        
+        #s.range('B1:Z200').columns.autofit()
+        s.range('B1:Z200').column_width = 7
         row=row+1
 
 #wb.save()     
