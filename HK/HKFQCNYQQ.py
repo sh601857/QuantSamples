@@ -11,7 +11,14 @@ import gtimg
 
 
 hkd = pd.read_csv('HKRawQ/HKD2CNY.csv', index_col=[0] ,delimiter=',')
-hkd.to_csv('HKD2CNY.txt',header=False, index=False,float_format="%.3f", date_format='%Y-%m-%d',encoding='gbk')
+hkd100 = hkd
+hkd100['midRate'] = hkd100['midRate'] * 100
+hkd100.to_csv('HKD2CNY.txt',header=False, index=False,float_format="%.3f", date_format='%Y-%m-%d',encoding='gbk')
+
+usd = pd.read_csv('HKRawQ/USD2CNY.csv', index_col=[0] ,delimiter=',')
+usd100 = usd
+usd100['midRate'] = usd100['midRate'] * 100
+usd100.to_csv('USD2CNY.txt',header=False, index=False,float_format="%.3f", date_format='%Y-%m-%d',encoding='gbk')
 
 
 tickers = ['00811','00902','00939','00998','01071','01288','01336','01339','01398','01816','01918','01988',
