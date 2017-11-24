@@ -25,6 +25,8 @@ plt.plot(ev.index, ev*0.8, label='0.8ev')
 
 
 plt.yscale(u'log')
+
+
 plt.yticks([10.0,20.0,40.0,80.0])
 plt.ylim(10,80)
 plt.xlim( q.index[0] + pd.Timedelta('-10 days') , q.index[-1] + pd.Timedelta('20 days'))
