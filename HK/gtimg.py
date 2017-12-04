@@ -15,9 +15,12 @@ import sys
 #http://data.gtimg.cn/flashdata/hk/daily/12/hkHSI.js
 #http://web.sqt.gtimg.cn/q=r_hk00700
 
-def GetDayKofYear( year , ticker , df=0):
+def GetDayKofYear( year , ticker , df=0, dateindex=0):
 
-    url = 'http://data.gtimg.cn/flashdata/hk/daily/{0}/{1}.js'.format( year, ticker )
+    url = 'http://data.gtimg.cn/flashdata/hushen/daily/{0}/{1}.js'.format( year, ticker )
+    if ticker[0:2] == 'hk':
+        url = 'http://data.gtimg.cn/flashdata/hk/daily/{0}/{1}.js'.format( year, ticker )
+      
     #cash ='temp.txt'
 
     #try:    
@@ -38,7 +41,14 @@ def GetDayKofYear( year , ticker , df=0):
         if df==0:
             return dat
         else:
-            return  pd.DataFrame(dat)
+            if dateindex ==1:
+                quote = pd.DataFrame(dat)
+                quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
+                quote['D'] = pd.to_datetime(quote['D'], format='%y%m%d')
+                quote.set_index('D',inplace=True)
+                return quote
+            else:
+                return  pd.DataFrame(dat)
     except:
         raise
         print("Unexpected error:", sys.exc_info()[0])
@@ -175,8 +185,8 @@ def GetLatestQuoteStock( tickers ):
 
 
 
-#dat = GetDayKofYear('16', 'hk00966',df=1)
-
+#dat = GetDayKofYear('17', 'hkHSI', df=1, dateindex=1)
 #print(dat)
+
 #dat =  GetLatestQuoteStock( 'r_hk00966,r_hkHSI' )
 #print(dat)
