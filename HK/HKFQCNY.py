@@ -11,14 +11,15 @@ import math
 
 
 hkd = pd.read_csv('HKRawQ/HKD2CNY.csv', index_col=[0] ,delimiter=',')
-hkd.to_csv('HKD2CNY.txt',header=False, index=False,float_format="%.3f", date_format='%Y-%m-%d',encoding='gbk')
+#hkd.to_csv('HKD2CNY.txt',header=False, index=False,float_format="%.3f", date_format='%Y-%m-%d',encoding='gbk')
 
 
-#tickers = ['00811','00902','00939','00998','01071','01288','01339','01398','01816','01918','01988',
-           #'02318','02328','02333','02601','02799','02883','03328','03618','03899','03968','03988','06818',
-           #'00966','01177']
+tickers = ['00811','00902','00939','00998','01071','01288','01336','01339','01398','01816','01918','01963','01988',
+           '02318','02328','02333','02601','02799','02883','03328','03618','03899','03900','03968','03988','06818',
+           '00966','01177']
+
 #tickers = ['00966','01177']
-tickers = ['01963']
+#tickers = ['01963']
 
 for ticker in tickers:
     quote = pd.read_csv('HKRawQ/{0}.csv'.format(ticker), index_col=[0] ,delimiter=',',encoding='gbk')
