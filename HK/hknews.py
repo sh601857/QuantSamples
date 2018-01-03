@@ -66,14 +66,21 @@ sql = "INSERT OR REPLACE INTO HKTHolds VALUES (?, ?, ?, ?)"
 conn = sqlite3.connect('HKI.db')
 cursor = conn.cursor()  
 
-cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20170316' order by tradedate")
+cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20171229' order by tradedate")
 tdates = cursor.fetchall()
 for tdate in tdates:   
     print( tdate[0] )
-    relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] ) 
+    relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] , 'sh') 
     if len( relist ) > 10:
         cursor.executemany(sql, relist)
 
+for tdate in tdates:   
+    print( tdate[0] )
+    relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] , 'sz') 
+    if len( relist ) > 10:
+        cursor.executemany(sql, relist)		
+
 conn.commit()			
 conn.close()
+
 #select * from hktholds where secid='90004'
