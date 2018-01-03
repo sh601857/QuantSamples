@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import urllib.request 
 import shutil
 import csv
@@ -20,7 +22,7 @@ kd_HSI = kd[kd.ticker=='HSI']
 kd_HSCEI = kd[kd.ticker=='HSCEI']
 
 
-conn = sqlite3.connect('HKI.db')
+conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 cursor = conn.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS HKITRI (

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import urllib
 import urllib.request
 import re
@@ -63,7 +65,7 @@ hknews.init_post()
 
     
 sql = "INSERT OR REPLACE INTO HKTHolds VALUES (?, ?, ?, ?)"
-conn = sqlite3.connect('HKI.db')
+conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 cursor = conn.cursor()  
 
 cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20171229' order by tradedate")

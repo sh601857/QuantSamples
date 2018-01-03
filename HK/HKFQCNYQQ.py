@@ -24,7 +24,7 @@ tickers = ['00811','00902','00939','00998','01071','01288','01336','01339','0139
 
 
 for ticker in tickers:
-    quote = gtimg.GetDayKofYear('17', 'hk'+ticker,df=1)
+    quote = gtimg.GetDayKofYear('18', 'hk'+ticker,df=1)
     quote['A'] = quote['C'] * quote['V']
     quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
     quote['D'] = quote.apply(lambda row: ('20{0}-{1}-{2}'.format( row['D'][:2],row['D'][2:4] ,row['D'][4:]) ), axis = 1)    
