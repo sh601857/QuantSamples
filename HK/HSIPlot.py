@@ -8,7 +8,7 @@ import talib as ta
 import math
 #engine = create_engine('sqlite:///:HKI.db')
 
-conn = sqlite3.connect('HKI.db')
+conn = sqlite3.connect('u'D:\\yun\∞Ÿ∂»‘∆\\PortfolioMan\\dat\\HKI.db)
 r = pd.read_sql_query('SELECT * FROM HKITRI where secid=\'HSI\' ORDER BY tradedate', conn)
 
 NDays = 3;
