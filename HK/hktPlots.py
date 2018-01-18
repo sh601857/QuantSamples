@@ -24,7 +24,7 @@ def PlotOnAxe(ax, df):
     xstickslables = [ df.iloc[i,0] for i in xsticks ]
     ax.set_xticks(xsticks)
     ax.set_xticklabels( xstickslables )
-    ax.set_xlim(0, len(df)+5)
+    ax.set_xlim(0, len(df)+10)
     
 plt.switch_backend('TkAgg') 
 fig = plt.figure(figsize=(20, 10), facecolor=(.94,.94,.94))
