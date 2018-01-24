@@ -6,17 +6,23 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-stocks = [('90004',u'白云机场'),('90276',u'恒瑞医药'),('90519',u'贵州茅台'),
-          ('93288',u'海天味业'),('72415',u'海康威视'),('72304',u'洋河股份')]
-          
-#stocks = [('93833',u'欧派家居'),('70651',u'格力电器'),('72508',u'老板电器'),
-#          ('72572',u'索菲亚  '),('70333',u'美的集团'),('72032',u'苏泊尔  ')]
+ll = 2
+
+if ll == 1:
+    stocks = [('90004',u'白云机场'),('90276',u'恒瑞医药'),('90519',u'贵州茅台'),
+              ('93288',u'海天味业'),('72415',u'海康威视'),('72304',u'洋河股份')]
+elif ll == 2:          
+    stocks = [('93833',u'欧派家居'),('70651',u'格力电器'),('72508',u'老板电器'),
+              ('72572',u'索菲亚  '),('70333',u'美的集团'),('72032',u'苏泊尔  ')]		  
+elif ll == 3:          
+    stocks = [('93833',u'欧派家居'),('70651',u'格力电器'),('72508',u'老板电器'),
+              ('72572',u'索菲亚  '),('70333',u'美的集团'),('72032',u'苏泊尔  ')]			  
           
 conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 
 def PlotOnAxe(ax, df):
     #ax.plot(df.index, df.shares, label='shares', color='black' )
-    ax.plot(df.index, df.pct, label='pct' , color='blue' )
+    ax.plot(range(0,len(df)), df.pct, label='pct' , color='blue' )
     #df.shares.plot(ax=ax, label='shares', color='black')
     #df.pct.plot(ax=ax, label='pct', color='blue', secondary_y=True,)
     
@@ -24,7 +30,7 @@ def PlotOnAxe(ax, df):
     xstickslables = [ df.iloc[i,0] for i in xsticks ]
     ax.set_xticks(xsticks)
     ax.set_xticklabels( xstickslables )
-    ax.set_xlim(0, len(df)+10)
+    ax.set_xlim(0, len(df)+5)
     
 plt.switch_backend('TkAgg') 
 fig = plt.figure(figsize=(20, 10), facecolor=(.94,.94,.94))
