@@ -8,13 +8,14 @@ import xlwings as xw
 # sht = wb.sheets['table']
 # print( sht.range("D2").value )
 
-fpath = 'C:\\Users\\SFF\\Documents\\'
+fpath = 'C:\\Users\\Administrator\\Documents\\'
 
 account = {'A764440052':'HHXHT','0162754560':'HHXHT','162754560':'HHXHT',
 'A760709852':'SFFHT','0162391596':'SFFHT','162391596':'SFFHT',
 'A103762289':'HYJHT','0124806514':'HYJHT',
 'A733917349':'HTSWP','0221666359':'HTSWP',
 'A733919236':'JAXHT','0221666518':'JAXHT',
+'A242096229':'LLFHTo','0243781523':'LLFHTo',
 'C115038475':'HYJHB','2010504448':'HYJHB'}
 
 rec = pd.read_csv(fpath+'table.xls',sep='\t',header=0, index_col=None, dtype={u'股东帐户':str,u'证券代码':str}, encoding='gbk',
