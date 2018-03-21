@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# dksnwmydimrcbibf  dksnwmydimrcbibf
+# dksnwmydimrcbibf  dksnwmydimrcbibf  http://openapp.10010.com/bj/opticalbroadband/optical_toOpticalQueryOrder.action
 
 
 import sys
