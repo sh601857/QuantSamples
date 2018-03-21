@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #from sqlalchemy import create_engine
 import numpy as np
 import pandas as pd
@@ -8,7 +10,7 @@ import talib as ta
 import math
 #engine = create_engine('sqlite:///:HKI.db')
 
-conn = sqlite3.connect('u'D:\\yun\°Ù¶ÈÔÆ\\PortfolioMan\\dat\\HKI.db)
+conn = sqlite3.connect(u'D:\\yun\ç™¾åº¦äº‘\\PortfolioMan\\dat\\HKI.db')
 r = pd.read_sql_query('SELECT * FROM HKITRI where secid=\'HSI\' ORDER BY tradedate', conn)
 
 NDays = 3;
