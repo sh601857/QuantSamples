@@ -18,7 +18,7 @@ elif ll == 3:
     stocks = [('93833',u'欧派家居'),('70651',u'格力电器'),('72508',u'老板电器'),
               ('72572',u'索菲亚  '),('70333',u'美的集团'),('72032',u'苏泊尔  ')]			  
           
-conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
+conn = sqlite3.connect(u'D:\\yun\\百度云\\PortfolioMan\\dat\\HKI.db')
 
 def PlotOnAxe(ax, df):
     #ax.plot(df.index, df.shares, label='shares', color='black' )
