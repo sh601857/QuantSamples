@@ -8,7 +8,7 @@ import xlwings as xw
 # sht = wb.sheets['table']
 # print( sht.range("D2").value )
 
-fpath = 'C:\\Users\\SFF\\Documents\\'
+fpath = 'C:\\Users\\Administrator\\Documents\\'
 
 with open( fpath+'wt.xls', 'r', encoding='gbk') as fpr: 
     content = fpr.read() 
@@ -26,7 +26,7 @@ rec.dropna(subset=[u'股东代码'],inplace=True)
 for i in range( len(rec) ):
     if u'卖出' in rec.iloc[i,3]:
         rec.iloc[i,6] = - rec.iloc[i,6] 
-    rec.iloc[i,4] = i+1 		
+    rec.iloc[i,4] = i+10001 		
 rec[u'股东代码'] = rec[u'股东代码'].map( lambda x: account[x] )
 rec[u'发生日期'] = rec[u'发生日期'].map( lambda x: x.replace(u'-', '')  )
 rec[u'业务名称'] = rec[u'业务名称'].map( lambda x: x.replace(u'清算', '')  )
