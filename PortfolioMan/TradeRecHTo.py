@@ -8,7 +8,7 @@ import xlwings as xw
 # sht = wb.sheets['table']
 # print( sht.range("D2").value )
 
-fpath = 'C:\\Users\\Administrator\\Documents\\'
+fpath = 'C:\\Users\\SFF\\Documents\\'
 
 account = {'A242096229':'LLFHTo','0243781523':'LLFHTo','0124806514':'HYJHTo',}
 
