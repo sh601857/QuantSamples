@@ -68,7 +68,7 @@ sql = "INSERT OR REPLACE INTO HKTHolds VALUES (?, ?, ?, ?)"
 conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 cursor = conn.cursor()  
 
-cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20180502' order by tradedate")
+cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20180507' order by tradedate")
 tdates = cursor.fetchall()
 for tdate in tdates:   
     print( tdate[0] )
@@ -84,5 +84,7 @@ for tdate in tdates:
 
 conn.commit()			
 conn.close()
+
+name = input("Press any key to exit\n")
 
 #select * from hktholds where secid='90004'
