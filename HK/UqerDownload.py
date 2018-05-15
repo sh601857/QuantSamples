@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from uqer import Client
 
 uqer = Client(username='huyijiong@139.com', password='qwe123!@#')
