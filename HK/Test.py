@@ -30,7 +30,7 @@ for i in range(2,4):
     outi[i] = out.any()
   
 print(numj)  
-print(outi)
+print( np.logical_not(outi) )
 
 
 #import webbrowser, urllib.request
