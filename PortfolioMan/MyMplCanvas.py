@@ -1,4 +1,6 @@
 import sys
+import os
+os.environ['QT_API'] = 'pyside2'
 import matplotlib
 matplotlib.use('Qt4Agg')
 import pylab

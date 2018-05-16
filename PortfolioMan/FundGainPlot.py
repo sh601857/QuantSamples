@@ -21,7 +21,7 @@ class FundGainPlotWgt(QWidget):
         # generate the plot
              
         self.canvas = MyMplCanvas(self, width=5, height=4) 
-        self.ax1 = self.canvas.fig.add_axes( [0.0, 0.04, 0.95, 0.95], axis_bgcolor=(.94,.94,.94))
+        self.ax1 = self.canvas.fig.add_axes( [0.0, 0.04, 0.95, 0.95], facecolor=(.94,.94,.94))
         self.ax1.tick_params('y', labelright = True ,labelleft = False )
         
         hlayout = QHBoxLayout()
