@@ -43,7 +43,7 @@ axes.append( fig.add_axes([0.34, 0.05, 0.29, 0.4]) )
 axes.append( fig.add_axes([0.66, 0.05, 0.29, 0.4]) )
 
 for ax in axes:
-    ax.set_axis_bgcolor((.94,.94,.94))
+    ax.set_facecolor((.94,.94,.94))
     ax.tick_params('y', labelright = True ,labelleft = False )
 
 for i in range(0,len(stocks)):
