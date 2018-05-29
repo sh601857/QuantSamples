@@ -112,4 +112,10 @@ console.toolbox = [{'autosave': False,
                     'pseudo_tty': False,
                     'raise_panel': True,
                     'title': None}]
+proj.file-list = [loc('gtimg.py'),
+                  loc('HKFQCNYQQ.py'),
+                  loc('hknews.py'),
+                  loc('hktPlots.py'),
+                  loc('HSIUQ.py'),
+                  loc('UqerDownload.py')]
 proj.file-type = 'shared'
