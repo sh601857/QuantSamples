@@ -18,8 +18,9 @@ from uqer import Client
 
 kd = pd.read_csv('HKI.csv', index_col=0)
 kd['closeIndexR'] = kd['closeIndex']
-kd_HSI = kd[kd.ticker=='HSI']
-kd_HSCEI = kd[kd.ticker=='HSCEI']
+
+kd_HSI = kd.loc[ kd.index[ kd.ticker=='HSI'], :]
+kd_HSCEI = kd.loc[ kd.index[ kd.ticker=='HSCEI'],:]
 
 
 conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
@@ -89,17 +90,17 @@ for sday in kd_HSI.tradeDate.values: #r.date :
 
 conn.commit()			
 conn.close()
-mlt = kd_HSCEI['closeIndexR'] / kd_HSCEI['closeIndex']
-kd_HSCEI['openIndex'] = kd_HSCEI['openIndex'] * mlt
-kd_HSCEI['highestIndex'] = kd_HSCEI['highestIndex'] * mlt   
-kd_HSCEI['lowestIndex'] = kd_HSCEI['lowestIndex'] * mlt 
-kd_HSCEI['closeIndex'] = kd_HSCEI['closeIndexR'] 
+mlt = kd_HSCEI.loc[:,'closeIndexR'] / kd_HSCEI.loc[:,'closeIndex']
+kd_HSCEI.loc[:,'openIndex'] = kd_HSCEI.loc[:,'openIndex'] * mlt
+kd_HSCEI.loc[:,'highestIndex'] = kd_HSCEI.loc[:,'highestIndex'] * mlt   
+kd_HSCEI.loc[:,'lowestIndex'] = kd_HSCEI.loc[:,'lowestIndex'] * mlt 
+kd_HSCEI.loc[:,'closeIndex'] = kd_HSCEI.loc[:,'closeIndexR'] 
 
-mlt = kd_HSI['closeIndexR'] / kd_HSI['closeIndex']
-kd_HSI['openIndex'] = kd_HSI['openIndex'] * mlt
-kd_HSI['highestIndex'] = kd_HSI['highestIndex'] * mlt    
-kd_HSI['lowestIndex'] = kd_HSI['lowestIndex'] * mlt 
-kd_HSI['closeIndex'] = kd_HSI['closeIndexR'] 
+mlt = kd_HSI['closeIndexR'] / kd_HSI.loc[:,'closeIndex']
+kd_HSI.loc[:,'openIndex'] = kd_HSI.loc[:,'openIndex'] * mlt
+kd_HSI.loc[:,'highestIndex'] = kd_HSI.loc[:,'highestIndex'] * mlt    
+kd_HSI.loc[:,'lowestIndex'] = kd_HSI.loc[:,'lowestIndex'] * mlt 
+kd_HSI.loc[:,'closeIndex'] = kd_HSI.loc[:,'closeIndexR'] 
 
 #rd = pd.concat([kd_HSCEI, kd_HSI] )
 #rd = rd.drop('closeIndexR',axis=1)
