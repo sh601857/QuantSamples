@@ -54,7 +54,8 @@ for sday in kd_HSI.tradeDate.values: #r.date :
     tday = datetime.datetime.strptime(sday, '%Y-%m-%d')
     file = 'idx_{0}{1}.csv'.format(tday.day, tday.strftime('%b%y'))
     cash ='temp.csv'
-    url = 'http://www.hsi.com.hk/HSI-Net/static/revamp/contents/en/indexes/report/hstri/' + file
+    url = 'https://www.hsi.com.hk/static/uploads/contents/en/indexes/report/hstri/' + file
+    #url = 'http://www.hsi.com.hk/HSI-Net/static/revamp/contents/en/indexes/report/hstri/' + file
     print ('downloading {0} with urllib'.format(tday.strftime('%d%b%y')))
     try:    
         with urllib.request.urlopen(url) as response, open(cash, 'wb') as out_file:
@@ -67,16 +68,17 @@ for sday in kd_HSI.tradeDate.values: #r.date :
         spamreader = csv.reader(csvfile, delimiter='\t', quoting=csv.QUOTE_ALL)
         inserted=0
         for row in spamreader:
-            if( len(row) > 4 and u'Hang Seng Index Total Return Index' in row[1] ):
+            if( len(row) > 4 and u'Hang Seng Index (Gross Total Return Index)' in row[1] ):
                 sqllist=[]
                 sqllist.append(u'HSI')
                 sqllist.append(tday.strftime('%Y%m%d'))
                 sqllist.append(float(row[3]))
                 sqltuple=tuple(sqllist)
+                print( sqltuple )
                 cursor.execute(sql,sqltuple)
                 kd_HSI.loc[kd_HSI.tradeDate==sday,'closeIndexR'] = sqllist[2]
                 inserted=inserted+1
-            if( len(row) > 4 and u'Hang Seng China Enterprises Index Total Return Index' in row[1] ):
+            if( len(row) > 4 and u'Hang Seng China Enterprises Index (Gross Total Return Index)' in row[1] ):
                 sqllist=[]
                 sqllist.append(u'HSCEI')
                 sqllist.append(tday.strftime('%Y%m%d'))
