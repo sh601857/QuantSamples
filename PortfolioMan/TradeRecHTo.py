@@ -10,7 +10,7 @@ import xlwings as xw
 
 fpath = 'C:\\Users\\yijio\\Documents\\'
 
-account = {'A242096229':'LLFHTo','0243781523':'LLFHTo','0124806514':'HYJHTo','F893754036':'HYJHFB','0509901310':'HYJSFB'}
+account = {'A242096229':'LLFHTo','0243781523':'LLFHTo','0124806514':'HYJHTo','F893754036':'HYJHFB','0509901310':'HYJSFB','A350373987':'JAXHTO','0253087548':'JAXHTO'}
 
 rec = pd.read_csv(fpath+'table.xls',sep='\t',header=0, index_col=None, dtype={u'股东帐户':str,u'证券代码':str}, encoding='gbk',
       usecols=[u'成交日期',u'证券代码',u'证券名称',u'操作',u'合同编号',u'成交均价',u'成交数量',u'成交金额',u'发生金额',u'股东帐户'])

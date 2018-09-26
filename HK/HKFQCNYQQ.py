@@ -9,6 +9,7 @@ import numpy as np
 import talib as ta
 import math
 import gtimg
+import requests
 
 
 hkd = pd.read_csv('HKRawQ/HKD2CNY.csv', index_col=[0] ,delimiter=',')
@@ -22,13 +23,13 @@ tickers = ['00811','00902','00939','00998','01071','01288','01336','01339','0139
            '02318','02328','02333','02601','02799','02883','03328','03618','03899','03900','03968','03988','06818',
            '00966','01177']
 
-
+session=requests.Session()
 for ticker in tickers:
     print(ticker)
-    quote = gtimg.GetDayKofYear('18', 'hk'+ticker,df=1)
+    quote = gtimg.GetDayKofYear('18', 'hk'+ticker,df=1,session=session)
     #print(quote)
     quote['A'] = quote['C'] * quote['V']
-    quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
+    quote['D'] = quote.apply(lambda row: ( row['D'] ), axis = 1)
     quote['D'] = quote.apply(lambda row: ('20{0}-{1}-{2}'.format( row['D'][:2],row['D'][2:4] ,row['D'][4:]) ), axis = 1)    
     #quote = pd.read_csv('HKRawQ/{0}.csv'.format(ticker), index_col=[0] ,delimiter=',',encoding='gbk')
 

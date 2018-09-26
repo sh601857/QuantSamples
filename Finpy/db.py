@@ -13,6 +13,7 @@ class b_sec(Base):
     ticker = Column(String(32), nullable=False)
     exchangeCD = Column(String(32), nullable=False)
     sectype = Column(String(32), nullable=False)
+    qsyear = Column(Integer, default = 2008)
     valid = Column(Boolean, default=True)
 
 

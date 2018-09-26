@@ -5,7 +5,7 @@
 #http://web.ifzq.gtimg.cn/appstock/app/hkMinute/query?_var=min_data_hk00700&code=hk00700&r=0.23197541709567315
 
 from datetime import datetime
-import webbrowser, urllib.request
+import requests
 import shutil
 import numpy as np
 import pandas as pd
@@ -15,26 +15,17 @@ import sys
 #http://data.gtimg.cn/flashdata/hk/daily/12/hkHSI.js
 #http://web.sqt.gtimg.cn/q=r_hk00700
 
-def GetDayKofYear( year , ticker , df=0, dateindex=0):
+def GetDayKofYear( year , ticker , df=0, dateindex=0 , session=requests.Session()):
 
     url = 'http://data.gtimg.cn/flashdata/hushen/daily/{0}/{1}.js'.format( year, ticker )
     if ticker[0:2] == 'hk':
         url = 'http://data.gtimg.cn/flashdata/hk/daily/{0}/{1}.js'.format( year, ticker )
-      
-    #cash ='temp.txt'
-
-    #try:    
-        #with urllib.request.urlopen(url) as response, open(cash, 'wb') as out_file:
-            #shutil.copyfileobj(response, out_file)
-    #except:
-        #print("Unexpected error:", sys.exc_info()[0])
-        #return None
     try:
-        response = urllib.request.urlopen(url)
-        stocks_detail = response.read()
-        #print( stocks_detail.decode('gb2312')  )
+        #session.trust_env = False        
+        response = session.get(url)  #
+        stocks_detail = response.text
         
-        dat = np.genfromtxt( io.BytesIO( (stocks_detail) ), comments='\\',dtype="a6,f8,f8,f8,f8,f8",
+        dat = np.genfromtxt( io.StringIO( stocks_detail), comments='\\',dtype="U6,f8,f8,f8,f8,f8",
                          skip_header=1, skip_footer=1,names="D, O, C, H, L, V")
         #dat = pd.read_csv(io.StringIO(stocks_detail.decode('gb2312')), sep=' ', header=None, index_col=[0], skiprows=1, skipfooter=1, 
                           #comment='\\', names="D, O, C, H, L, V" ,encoding='gb2312')
@@ -43,7 +34,7 @@ def GetDayKofYear( year , ticker , df=0, dateindex=0):
         else:
             if dateindex ==1:
                 quote = pd.DataFrame(dat)
-                quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
+                #quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
                 quote['D'] = pd.to_datetime(quote['D'], format='%y%m%d')
                 quote.set_index('D',inplace=True)
                 return quote
@@ -57,6 +48,31 @@ def GetDayKofYear( year , ticker , df=0, dateindex=0):
     return dat
 
 #http://qt.gtimg.cn/q=sz000858
+
+def GetDayK(istart_year,ticker, df=0,dateindex=0, session=requests.Session()):
+    iend_year = datetime.today().year
+    da = None
+    for year in range(istart_year,iend_year+1):
+        yda = GetDayKofYear(str(year)[-2:], ticker,0,0,session=session)
+        if yda is None or len(yda) == 0:
+            continue
+        if da is None:
+            da = yda
+        else:
+            da = np.append(da,yda)
+    
+    if df==0:
+        return da
+    else:
+        if dateindex ==1:
+            quote = pd.DataFrame(da)
+            #quote['D'] = quote.apply(lambda row: ( row['D'].decode('gb2312') ), axis = 1)
+            quote['D'] = pd.to_datetime(quote['D'], format='%y%m%d')
+            quote.set_index('D',inplace=True)
+            return quote
+        else:
+            return  pd.DataFrame(da)    
+    
 def GetLatestQuoteStock( tickers ):
     url = 'http://qt.gtimg.cn/q={0}'.format( tickers )
     #cash ='temp.txt'    
@@ -189,4 +205,7 @@ def GetLatestQuoteStock( tickers ):
 #print(dat)
 
 #dat =  GetLatestQuoteStock( 'r_hk00966,r_hkHSI' )
+#print(dat)
+
+#dat = GetDayK(2017, 'hkHSI', df=1, dateindex=1)
 #print(dat)
