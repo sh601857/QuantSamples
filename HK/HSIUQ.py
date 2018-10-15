@@ -17,7 +17,7 @@ from uqer import Client
 #uqer.download_data( 'HKI.csv' )
 
 kd = pd.read_csv('HKI.csv', index_col=0)
-kd['closeIndexR'] = kd['closeIndex']
+kd['closeIndexR'] = np.NaN
 
 kd_HSI = kd.loc[ kd.index[ kd.ticker=='HSI'], :]
 kd_HSCEI = kd.loc[ kd.index[ kd.ticker=='HSCEI'],:]
@@ -76,7 +76,7 @@ for sday in kd_HSI.tradeDate.values: #r.date :
                 sqltuple=tuple(sqllist)
                 print( sqltuple )
                 cursor.execute(sql,sqltuple)
-                kd_HSI.loc[kd_HSI.tradeDate==sday,'closeIndexR'] = sqllist[2]
+                #kd_HSI.loc[kd_HSI.tradeDate==sday,'closeIndexR'] = sqllist[2]
                 inserted=inserted+1
             if( len(row) > 4 and u'Hang Seng China Enterprises Index (Gross Total Return Index)' in row[1] ):
                 sqllist=[]
@@ -85,13 +85,29 @@ for sday in kd_HSI.tradeDate.values: #r.date :
                 sqllist.append(float(row[3]))
                 sqltuple=tuple(sqllist)
                 cursor.execute(sql,sqltuple)
-                kd_HSCEI.loc[kd_HSCEI.tradeDate==sday,'closeIndexR'] = sqllist[2]
+                #kd_HSCEI.loc[kd_HSCEI.tradeDate==sday,'closeIndexR'] = sqllist[2]
                 inserted=inserted+1
             if( inserted>=2 ):
                 break
 
-conn.commit()			
+conn.commit()	
+
+sql = "select secid, tradedate, closeprice from HKITRI where tradedate>='{0}' order by tradedate".format(  kd.iloc[0,1].replace("-", "") )
+hsitri = pd.read_sql( sql, conn )
 conn.close()
+
+for i in range(0,len(hsitri)):
+    iday = hsitri.loc[i,'tradedate']
+    sday = '{0}-{1}-{2}'.format( iday[0:4], iday[4:6] , iday[6:8] )
+    if hsitri.loc[i,'secid'] == 'HSI':
+        kd_HSI.loc[kd_HSI.tradeDate==sday,'closeIndexR'] = hsitri.loc[i,'closeprice']
+    elif hsitri.loc[i,'secid'] == 'HSCEI':
+        kd_HSCEI.loc[kd_HSCEI.tradeDate==sday,'closeIndexR'] = hsitri.loc[i,'closeprice']
+        
+kd_HSI.dropna(subset=['closeIndexR'], inplace=True)
+kd_HSCEI.dropna(subset=['closeIndexR'], inplace=True)
+
+
 mlt = kd_HSCEI.loc[:,'closeIndexR'] / kd_HSCEI.loc[:,'closeIndex']
 kd_HSCEI.loc[:,'openIndex'] = kd_HSCEI.loc[:,'openIndex'] * mlt
 kd_HSCEI.loc[:,'highestIndex'] = kd_HSCEI.loc[:,'highestIndex'] * mlt   
