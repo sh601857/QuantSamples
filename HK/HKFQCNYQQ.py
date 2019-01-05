@@ -26,7 +26,7 @@ tickers = ['00811','00902','00939','00998','01071','01288','01336','01339','0139
 session=requests.Session()
 for ticker in tickers:
     print(ticker)
-    quote = gtimg.GetDayKofYear('18', 'hk'+ticker,df=1,session=session)
+    quote = gtimg.GetDayKofYear('19', 'hk'+ticker,df=1,session=session)
     #print(quote)
     quote['A'] = quote['C'] * quote['V']
     quote['D'] = quote.apply(lambda row: ( row['D'] ), axis = 1)
