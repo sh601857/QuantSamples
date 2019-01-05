@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # dksnwmydimrcbibf  dksnwmydimrcbibf  http://openapp.10010.com/bj/opticalbroadband/optical_toOpticalQueryOrder.action
-
+# Select Code, sum( Volume ) as SumVollum, sum( NetCashFlow ) as Cost from D_Trade where Account='HYJPA' group by Code order by SumVollum desc
 
 import sys
 import os

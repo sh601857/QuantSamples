@@ -61,5 +61,7 @@ def plot_pev(secID_a,secID_h,start):
 #plot_pev('600016.XSHG','01988.XHKG','2014-01-01')
 
 #plot_pev('601166.XSHG','601288.XSHG','2014-01-01')
-#plot_pev('601288.XSHG','601939.XSHG','2012-01-01')
+plot_pev('601288.XSHG','601939.XSHG','2012-01-01')
+#plot_pev('601169.XSHG','600016.XSHG','2012-01-01')
 #plot_pev('601601.XSHG', '601318.XSHG','2014-01-01')
+

@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-ll = 2
+ll = 1
 
 if ll == 1:
     stocks = [('90004',u'白云机场'),('90276',u'恒瑞医药'),('90519',u'贵州茅台'),

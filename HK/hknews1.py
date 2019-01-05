@@ -34,26 +34,38 @@ class HKTHolds:
         #'today':20180102,
         #'sortBy':,
         #'alertMsg':,
-        'ddlShareholdingDay':day,
-        'ddlShareholdingMonth':month,
-        'ddlShareholdingYear':year,
-        'btnSearch.x':27,
-        'btnSearch.y':8,
+        #'ddlShareholdingDay':day,
+        #'ddlShareholdingMonth':month,
+        #'ddlShareholdingYear':year,
+        #'btnSearch.x':27,
+        #'btnSearch.y':8,
+        
+        'txtShareholdingDate': '{0}/{1}/{2}'.format(year,month,day),
+        'btnSearch': u'搜尋'
         }
 
         form_data = urllib.parse.urlencode(form).encode(encoding='UTF8')
         request = urllib.request.Request(url, data = form_data)
         response = urllib.request.urlopen(request)
         resu=response.read().decode('utf-8')
+        #print(resu)
         relist = []
 
         soup = BeautifulSoup(resu, 'html.parser')
-        for tr in soup.find_all('tr',class_=True):
-            tds = tr.find_all('td')
-            tradedate = '{0}{1}{2}'.format(year,month,day)
-            shares = atoi( tds[2].string.strip())
-            pct = atof( tds[3].string.strip()[:-1] )
-            relist.append ( ( tds[0].string.strip(), tradedate, shares , pct ) )
+        
+        tbodys = soup.find_all('tbody' )
+        if len(tbodys)>0:
+            for tr in tbodys[0].find_all('tr'):
+                tds = tr.find_all('td')
+                tradedate = '{0}{1}{2}'.format(year,month,day)
+                divs = tds[0].find_all('div')
+                code = divs[1].string.strip()            
+                divs = tds[2].find_all('div')
+                shares = atoi( divs[1].string.strip())
+                divs = tds[3].find_all('div')
+                pct = atof( divs[1].string.strip()[:-1] )
+                
+                relist.append ( ( code, tradedate, shares , pct ) )
             
         return relist
     
@@ -68,21 +80,28 @@ sql = "INSERT OR REPLACE INTO HKTHolds VALUES (?, ?, ?, ?)"
 conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 cursor = conn.cursor()  
 
-cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20180909' order by tradedate")
+cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20181227' order by tradedate")
 tdates = cursor.fetchall()
 for tdate in tdates:   
-    print( tdate[0] )
+    print( tdate[0] ,end=' ')
+    
     relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] , 'sh') 
     if len( relist ) > 10:
         cursor.executemany(sql, relist)
-        conn.commit()
-
-for tdate in tdates:   
-    print( tdate[0] )
+        print (' sh ok' ,end=' ')
     relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] , 'sz') 
     if len( relist ) > 10:
-        cursor.executemany(sql, relist)
-        conn.commit()		
+        cursor.executemany(sql, relist)  
+        print (' sz ok')
+    
+    conn.commit()
+
+#for tdate in tdates:   
+    #print( tdate[0] )
+    #relist = hknews.get_data( tdate[0][6:8] ,  tdate[0][4:6] ,  tdate[0][0:4] , 'sz') 
+    #if len( relist ) > 10:
+        #cursor.executemany(sql, relist)
+        ##conn.commit()		
 
 #conn.commit()			
 conn.close()

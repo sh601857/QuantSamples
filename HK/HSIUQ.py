@@ -92,7 +92,7 @@ for sday in kd_HSI.tradeDate.values: #r.date :
 
 conn.commit()	
 
-sql = "select secid, tradedate, closeprice from HKITRI where tradedate>='{0}' order by tradedate".format(  kd.iloc[0,1].replace("-", "") )
+sql = "select secid, tradedate, closeprice from HKITRI where tradedate>='{0}' order by tradedate".format(  kd.iloc[-5,1].replace("-", "") )
 hsitri = pd.read_sql( sql, conn )
 conn.close()
 

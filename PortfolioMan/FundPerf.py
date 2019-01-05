@@ -27,6 +27,31 @@ for i in range(2,1000):
                 break
     else:
         break    
+        
+sht = wb.sheets['FundYear']
+for i in range(2,1000):    
+    code=sht.range('B{0}'.format(i)).value
+    if code != None:
+        npNav = SinaQuote.GetHNav( code[2:] )
+        if len(npNav) > 1:
+            sht.range((i,4)).value = npNav.fbrq[-1]
+            sht.range((i,5)).value = npNav.adjNav[-1] / npNav.adjNav[-2] - 1.0
+        for j in range(6,20):
+            bdate = sht.range((1,j)).value
+            if bdate != None:
+                begNav = npNav[ npNav.fbrq == bdate ]
+                if len(begNav) > 0:
+                    if j > 6:
+                        endNav = npNav[ npNav.fbrq == sht.range((1,j-1)).value ]
+                        sht.range((i,j)).value = endNav.adjNav[0] / begNav.adjNav[0] - 1.0
+                    else:
+                        sht.range((i,j)).value = npNav.adjNav[-1] / begNav.adjNav[0] - 1.0
+                
+            else:
+                break
+    else:
+        break 
+        
 #wb.save()     
 #wb.close()  
 

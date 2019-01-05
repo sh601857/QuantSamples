@@ -1,0 +1,24 @@
+<NotepadPlus>
+    <Project name="fin">
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\PortfolioMan.py" />
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\Funds.py" />
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\FundPerf.py" />
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\TradeRec.py" />
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\TradeRecHTo.py" />
+        <File name="D:\GitHub\QuantSamples\PortfolioMan\TradeRecPA.py" />
+        <File name="C:\Users\yijio\Documents\table.xls" />
+        <File name="D:\GitHub\QuantSamples\HK\UqerDownload.py" />
+        <File name="D:\GitHub\QuantSamples\HK\hknews1.py" />
+        <File name="D:\GitHub\QuantSamples\HK\HSIUQ.py" />
+        <File name="D:\GitHub\QuantSamples\HK\HKFQCNYQQ.py" />
+        <File name="import2db.py" />
+        <File name="PEV.py" />
+        <File name="D:\GitHub\QuantSamples\HK\HKRawQ\SHHKEX.csv" />
+        <File name="D:\yun\&#x767E;&#x5EA6;&#x4E91;\PortfolioMan\data_new\HTo2019.csv" />
+        <File name="D:\yun\&#x767E;&#x5EA6;&#x4E91;\PortfolioMan\data_new\HT2019.csv" />
+        <File name="D:\yun\&#x767E;&#x5EA6;&#x4E91;\PortfolioMan\data_new\pa2019.csv" />
+    </Project>
+    <Project name="work">
+        <File name="D:\Workspace\eCDUpy\m_vba_python.txt" />
+    </Project>
+</NotepadPlus>
