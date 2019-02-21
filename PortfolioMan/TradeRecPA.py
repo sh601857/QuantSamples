@@ -8,7 +8,7 @@ import xlwings as xw
 # sht = wb.sheets['table']
 # print( sht.range("D2").value )
 
-fpath = 'C:\\Users\\yijio\\Documents\\'
+fpath = 'C:\\Users\\hyj\\Documents\\'
 
 with open( fpath+'wt.xls', 'r', encoding='gbk') as fpr: 
     content = fpr.read() 

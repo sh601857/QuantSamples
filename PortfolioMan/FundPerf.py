@@ -11,6 +11,7 @@ sht = wb.sheets['FundPerf']
 
 for i in range(2,1000):    
     code=sht.range('B{0}'.format(i)).value
+    print(code)
     if code != None:
         npNav = SinaQuote.GetHNav( code[2:] )
         if len(npNav) > 1:
@@ -31,6 +32,7 @@ for i in range(2,1000):
 sht = wb.sheets['FundYear']
 for i in range(2,1000):    
     code=sht.range('B{0}'.format(i)).value
+    print(code)
     if code != None:
         npNav = SinaQuote.GetHNav( code[2:] )
         if len(npNav) > 1:

@@ -6,6 +6,7 @@ import re
 import sqlite3
 from bs4 import BeautifulSoup
 from locale import *
+import numpy as np
 
 setlocale(LC_NUMERIC, 'English_US')
 #atof('123,456')    # 123456.0
@@ -63,7 +64,10 @@ class HKTHolds:
                 divs = tds[2].find_all('div')
                 shares = atoi( divs[1].string.strip())
                 divs = tds[3].find_all('div')
-                pct = atof( divs[1].string.strip()[:-1] )
+                if divs[1].string is None:
+                    pct = np.NaN
+                else:
+                    pct = atof( divs[1].string.strip()[:-1] )
                 
                 relist.append ( ( code, tradedate, shares , pct ) )
             
@@ -80,7 +84,7 @@ sql = "INSERT OR REPLACE INTO HKTHolds VALUES (?, ?, ?, ?)"
 conn = sqlite3.connect(u'D:\\yun\百度云\\PortfolioMan\\dat\\HKI.db')
 cursor = conn.cursor()  
 
-cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20181227' order by tradedate")
+cursor.execute("select DISTINCT tradedate from hkitri where tradedate > '20190212' order by tradedate")
 tdates = cursor.fetchall()
 for tdate in tdates:   
     print( tdate[0] ,end=' ')
